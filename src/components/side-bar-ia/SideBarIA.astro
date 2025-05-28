@@ -1,0 +1,56 @@
+---
+import { buildFileTree } from "./buildFileTree";
+import { getCollection } from "astro:content";
+
+const docs = await getCollection("docs");
+const pathsDocs = docs.map((post) => post.id);
+---
+
+<ul>
+	{
+		() => {
+			const tree = buildFileTree(pathsDocs);
+			function renderTree(node: any, prefix = "") {
+				return Object.entries(node).map(([name, child]) => {
+					const currentPath = prefix + name;
+					const isLeaf = Object.keys(child).length === 0;
+
+					return (
+						<li>
+							{isLeaf ? (
+								<a href={`/docs/${currentPath}`}>{name}</a>
+							) : (
+								<details>
+									<summary>{name}</summary>
+									<ul>{renderTree(child, currentPath + "/")}</ul>
+								</details>
+							)}
+						</li>
+					);
+				});
+			}
+			return renderTree(tree);
+		}
+	}
+</ul>
+<style>
+	
+	ul {
+		list-style-type: none;
+		text-align: left;
+	}
+	li {
+		margin-left: 1rem;
+	}
+	li::marker{
+		color: transparent;
+	}
+
+	summary {
+		cursor: pointer;
+		
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+</style>

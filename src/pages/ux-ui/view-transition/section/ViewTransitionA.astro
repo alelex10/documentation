@@ -1,0 +1,30 @@
+---
+import Layout from "/layout.astro";
+// import {Content as Code} from "../article/*.md";
+// const codes = await Astro.glob("../article/*.md");
+const codesMd = await Astro.glob("../article/*.md");
+// import { default as Code } from "../article/CodeViewTransitionA.md";
+// const Content = codes.map((code) => code.compiledContent);
+/*EL ORDER ES IMPORTANTE */
+/*pUedo combertirlos en objetos tomando como identificador, name, como el titulo de cada archivo .md */
+const [CodeExampleA, CodeExampleB, Errores] = codesMd.map((code) => code.Content);
+---
+
+<Layout>
+	<h1>View Transition</h1>
+	<h2>dale click al gato</h2>
+	<div class="flex gap-2">
+		<a class="m-0 p-0" href="./ViewTransitionB"
+			><img
+				width="400px"
+				src="https://media.es.wired.com/photos/657cb5b81e17b099f8f9e15c/master/w_2240,c_limit/gatos%20172050389.jpg"
+				alt="imagen de gato"
+				transition:name="michi"
+			/>
+		</a>
+		<div transition:name="code" class="w-1/2">
+			<CodeExampleA />
+		</div>
+	</div>
+	<Errores />
+</Layout>

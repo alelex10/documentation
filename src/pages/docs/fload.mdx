@@ -1,0 +1,44 @@
+---
+layout: "/layout.astro"
+---
+
+# float
+
+La propiedad `float` en CSS se utiliza para crear layouts donde elementos pueden "flotar" a la izquierda o derecha del contenedor, y otros elementos pueden envolver el contenido alrededor de ellos.
+
+Los valores posibles son:
+
+- `left`: El elemento flota a la izquierda
+- `right`: El elemento flota a la derecha
+- `none`: El valor por defecto, que deshabilita el float
+
+Ejemplo básico:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .flotante {
+            float: left;
+            width: 200px;
+            height: 100px;
+            background-color: #f0f0f0;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="flotante">Elemento flotante</div>
+    <p>Este texto envuelve alrededor del elemento flotante. Lorem ipsum dolor sit amet...</p>
+</body>
+</html>
+```
+
+### Consejos de uso:
+
+1. Es útil para crear diseños de layouts complejos
+2. A menudo se usa con imágenes para que el texto rodee la imagen
+3. Puede causar problemas si no se "limpia" el float, por lo que se recomienda usar `clear: both;` o técnicas de clearfix
+
+¿Necesitas ver más ejemplos o necesitas ayuda con algo específico?

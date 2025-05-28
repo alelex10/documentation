@@ -1,0 +1,21 @@
+---
+import Layout from "../../../../layout.astro";
+
+import CodeCennterDiv from "./article/centrar/CodeCenterDiv.md";
+import CentrarDiv from "./article/centrar/CentrarDiv.astro";
+import Display from "./article/display/Display.md";
+const Article = Display;
+---
+
+<Layout>
+	<h1>CSS</h1>
+	<h2>Centrar un div</h2>
+	<div class="flex gap-2 h-[300px]">
+		<CentrarDiv />
+		<CodeCennterDiv />
+	</div>
+	<div>
+		<Display />
+		<Article />
+	</div>
+</Layout>

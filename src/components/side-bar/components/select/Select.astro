@@ -1,0 +1,55 @@
+---
+import type { menu } from "../../types/sideBarTypes";
+
+interface Props {
+	menu: menu[];
+}
+const { menu }: Props = Astro.props;
+---
+
+<div>
+	{
+		menu.map((menu) => (
+			<div>
+				{/* MENU TITLE */}
+				<button
+					class:list={[
+						"sidebar__select",
+						`block rounded hover:bg-gray-700 hover:text-white cursor-pointer w-full text-left`,
+					]}
+				>
+					<h5>{menu.title}</h5>
+				</button>
+				{/* MENU OPTIONS */}
+				<div class="menu__option hidden pl-2.5 border-l-[1px] text-sm">
+					{menu.options.map((option) => (
+						<a
+							href={option.link}
+							class:list={[`block rounded hover:bg-gray-700 hover:text-white cursor-pointer`]}
+						>
+							{option.name}
+						</a>
+					))}
+				</div>
+			</div>
+		))
+	}
+</div>
+
+<script>
+	const $selects = document.querySelectorAll(".sidebar__select");
+	// const $menus = document.querySelectorAll(".menu__option");
+
+	const toggleMenu = (menu: Element) => {
+		/* toggle: si tiene la clase hidden la quita, si no la pone */
+		menu?.classList.toggle("hidden");
+	};
+
+	$selects.forEach((select) => {
+		let $menu = select.nextElementSibling;
+
+		select.addEventListener("click", () => {
+			$menu && toggleMenu($menu);
+		});
+	});
+</script>

@@ -1,0 +1,36 @@
+---
+import Layout from "../../../layout.astro";
+import { default as Code } from "../article/CodeViewTransitionB.md";
+---
+
+<Layout>
+	<h1>michi</h1>
+	<p>
+		Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae, numquam! Quis quo excepturi provident et nulla
+		laborum eos? Saepe eum illum ut aperiam eaque mollitia excepturi perferendis temporibus recusandae quia.
+	</p>
+	<a href="./ViewTransitionA">
+		<img
+			width="100%"
+			src="https://media.es.wired.com/photos/657cb5b81e17b099f8f9e15c/master/w_2240,c_limit/gatos%20172050389.jpg"
+			alt="imagen de gato"
+			transition:name="michi"
+		/>
+	</a>
+
+	<div class:list={["relative", "box__code"]} transition:name="code">
+		<Code />
+		<!-- btn warp -->
+		<button class:list={["border-solid border-2 p-0.5 rounded-sm cursor-pointer absolute top-2 right-2"]}>warp </button>
+	</div>
+</Layout>
+<script>
+	const $pre = document.querySelector("pre");
+	const $boxCode = document.querySelector(".box__code");
+	const $btnWarp = $boxCode?.querySelector("button");
+
+	$btnWarp?.addEventListener("click", () => {
+		console.log("click");
+		$pre?.classList.toggle("warp");
+	});
+</script>
