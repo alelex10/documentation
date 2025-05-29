@@ -1,11 +1,8 @@
 ---
-import SideBarMdx from "@/components/side-bar-mdx/SideBarMdx.astro";
-import SideBarMdx2 from "@/components/side-bar-mdx/SideBarMdx2.astro";
 import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import { getCollection } from "astro:content";
 import SidebarIA from "../components/side-bar-ia/SideBarIA.astro";
-import { pathToArrayObject2 } from "../components/side-bar-mdx/util/pathToArrayObject2";
 const docs = await getCollection("docs");
 ---
 
@@ -19,14 +16,10 @@ const docs = await getCollection("docs");
 		<ClientRouter />
 	</head>
 	<body class="bg-bg-primary text-text-primary min-h-screen flex">
-		<!-- <SideBarMdx /> -->
-		<!-- <SideBarMdx2 /> -->
-		 <SidebarIA></SidebarIA>
-		<section class="py-6 mx-auto">
-			<!-- {pathToArrayObject2({ paths: docs.map((doc) => doc.id) })} -->
+		<SidebarIA />
+		<main class="py-6 mx-auto gap-4 flex flex-col max-w-[75ch]">
 			<slot />
-			<!-- {docs.map((doc) => <h1>{doc.data.title}</h1>)} -->
-		</section>
+		</main>
 	</body>
 </html>
 <style></style>

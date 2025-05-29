@@ -1,0 +1,35 @@
+
+<div class="container">
+	<div class="item">1</div>
+	<div class="item">2</div>
+	<div class="item">3</div>
+	<div class="item">4</div>
+	<div class="item">5</div>
+	<div class="item">6</div>
+	<div class="item">7</div>
+	<div class="item">8</div>
+	<div class="item">9</div>
+	<div class="item">10</div>
+	<div class="item">11</div>
+	<div class="item">12</div>
+</div>
+<style>
+	.container {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		grid-template-rows: repeat(3, 100px);
+		gap: 10px;
+		width: fit-content;
+		margin: auto;
+		justify-items: center;
+	}
+	.item {
+		background-color: #333;
+		color: #fff;
+		width: 100px;
+		height: 100px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+</style>

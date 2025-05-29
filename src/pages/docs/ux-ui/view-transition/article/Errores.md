@@ -1,3 +1,7 @@
+---
+layout: "/layout.astro"
+---
+
 # Errores
 ## no se animan las view transitions
 El error puede deberse a que tengo el window configurando para **maximo rendimiento**

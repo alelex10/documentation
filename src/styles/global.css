@@ -74,6 +74,10 @@ pre {
 		height: 100%;
 	} */
 }
+pre::-webkit-scrollbar-track {
+    background: #dddddd00;
+    border-radius: 4px;
+}
 ul {
 	margin: 3px 3px 3px 3px;
 }
@@ -145,6 +149,25 @@ a {
 		position: relative;
 		padding: 0.5rem 0;
 	}
+}
+/* Estilos del scrollbar */
+pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+    background: #dddddd00;
+    border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+    background: #444;
 }
 
 @theme {

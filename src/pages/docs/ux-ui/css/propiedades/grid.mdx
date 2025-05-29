@@ -1,0 +1,74 @@
+---
+layout: "/layout.astro"
+---
+
+import Grid from "./GridExample.astro";
+
+# grid
+
+## 📦 Propiedades del Grid Container
+
+```css
+.container {
+	display: grid;
+	/* o display: inline-grid; */
+
+	/* Define columnas */
+	grid-template-columns: 100px 200px 1fr;
+
+	/* Define filas */
+	grid-template-rows: auto 200px 100px;
+
+	/* Espaciado entre celdas */
+	gap: 20px;
+	/* o column-gap y row-gap por separado */
+
+	/* Alineación horizontal de items */
+	justify-items: start | end | center | stretch;
+
+	/* Alineación vertical de items */
+	align-items: start | end | center | stretch;
+
+	/* Alineación horizontal del grid completo */
+	justify-content: start | end | center | stretch | space-around | space-between | space-evenly;
+
+	/* Alineación vertical del grid completo */
+	align-content: start | end | center | stretch | space-around | space-between | space-evenly;
+}
+```
+
+## ⚙️ Funciones especiales
+```css
+/* Repetición */
+grid-template-columns: repeat(3, 1fr); /* 3 columnas de igual tamaño */
+
+/* Tamaño mínimo y máximo */
+grid-template-columns: minmax(100px, 1fr) 2fr 1fr;
+
+/* Auto-fill y auto-fit */
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+```
+### Example
+<Grid />
+
+```css
+<style>
+	.container {
+		display: grid;
+		/* repeticion automatica */
+		grid-template-columns: repeat(4, 1fr);
+		grid-template-rows: repeat(3, 100px);
+		gap: 10px;
+	}
+	.item {
+		background-color: #333;
+		color: #fff;
+		width: 100px;
+		height: 100px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+</style>
+```

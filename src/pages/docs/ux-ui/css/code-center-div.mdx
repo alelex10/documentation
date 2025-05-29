@@ -1,6 +1,14 @@
-<section>
+---
+layout: "/layout.astro"
 
-	<!-- conteiner div -->
+---
+import CodeCenterDiv from "./code-example-astro/CodeCenterDiv.astro"
+
+<div class="flex">
+<CodeCenterDiv />
+
+```css
+<section>
 	<div class="conteiner">
 		<div class="box__center"></div>
 	</div>
@@ -23,10 +31,13 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);/* se mueve en referecia a su posicion */
+/* se mueve en referecia a su posicion */
+        transform: translate(-50%, -50%);
 
         width: 100px;
         height: 100px;
         background-color: #fff;
     }
 </style>
+```
+</div>
