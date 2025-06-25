@@ -1,0 +1,67 @@
+<section class="album"></section>
+
+<style>
+
+	section.album {
+		display: grid;
+		margin: 0 auto;
+		max-width: calc(1200px + 1rem * 3);
+
+		grid-template-columns: repeat(4, 300px);
+		grid-template-rows: repeat(10, 300px);
+		gap: 1rem;
+	}
+	section.album {
+		display: grid;
+		margin: 0 auto;
+		max-width: calc(1200px + 1rem * 3);
+
+		grid-template-columns: repeat(4, 1fr);
+		grid-template-rows: repeat(10, 1fr);
+		gap: 1rem;
+	}
+	section.album img {
+		display: -moz-inline-grid;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+</style>
+<script>
+	const $album = document.querySelector(".album");
+
+	if ($album instanceof HTMLElement)
+		for (let i = 1; i <= 12; i++) {
+			let randomEntero = Math.floor(Math.random() * 800);
+			// altura random entre 1 y 2
+			let randomSpaceHeight = Math.floor(Math.random() * 2) + 1;
+			// ancho random entre 1 y 2
+			let calculeCurrentRow = Math.floor(i / 4 + 1);
+
+			let randomSpaceWidth = Math.floor(Math.random() * 2) + 1;
+
+			// let qualityImg = randomSpaceHeight * randomSpaceWidth > 1 ? "600" : "300";
+            let heightImg = randomSpaceHeight * 300;
+            let widthImg = randomSpaceWidth * 300;
+            
+			console.log(
+				"i",
+				i,
+				"calculeCurrentRow",
+				calculeCurrentRow,
+				"randomEntero",
+				randomEntero,
+				"randomSpaceHeight",
+				randomSpaceHeight,
+				"randomSpaceWidth",
+				randomSpaceWidth,
+				/* "qualityImg",
+				qualityImg */
+			);
+			$album.innerHTML += `<img class="img-${i}" src="https://picsum.photos/seed/${randomEntero}/${widthImg}/${heightImg}" alt="">`;
+
+			const img = $album.querySelector(`.img-${i}`);
+			if (img instanceof HTMLElement)
+				img.style.gridArea = `auto / auto / span ${randomSpaceHeight} / span ${randomSpaceWidth}`;
+		}
+</script>

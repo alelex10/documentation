@@ -1,0 +1,78 @@
+<section class="container">
+	<img class="container__element elemento-observado" src="https://picsum.photos/seed/1/300" alt="" />
+
+	<img class="container__element elemento-observado" src="https://picsum.photos/seed/2/300" alt="" />
+
+	<img class="container__element elemento-observado" src="https://picsum.photos/seed/3/300" alt="" />
+
+	<img class="container__element elemento-observado" src="https://picsum.photos/seed/4/300" alt="" />
+
+	<img class="container__element elemento-observado" src="https://picsum.photos/seed/5/300" alt="" />
+
+	<img class="container__element elemento-observado" src="https://picsum.photos/seed/6/300" alt="" />
+
+	<img class="container__element elemento-observado" src="https://picsum.photos/seed/7/300" alt="" />
+
+	<img class="container__element elemento-observado" src="https://picsum.photos/seed/8/300" alt="" />
+</section>
+
+<style>
+	.container {
+		columns: 2;
+	}
+	img {
+		margin-bottom: 1rem;
+	}
+	/* Estilo inicial */
+	.elemento-observado {
+		opacity: 0;
+		transform: translateY(100px);
+		transition:
+			opacity 1s ease-in-out,
+			transform 0.5s ease-in-out;
+	}
+	/* Estilo cuando es visible */
+	.elemento-observado.is-visible {
+		transform: translateY(0);
+		opacity: 1;
+	}
+</style>
+
+<script>
+	// Crear un observador
+	const observer = new IntersectionObserver(
+		(entries, observer) => {
+			entries.forEach((entry) => {
+				// entry.isIntersecting es true si el elemento está en el root (o cruza el umbral)
+				if (entry.isIntersecting) {
+					entry.target.classList.add("is-visible");
+					console.log("El elemento", entry.target, "está visible!");
+					// Opcionalmente, dejar de observar si solo necesitas saberlo una vez
+					// observer.unobserve(entry.target); // no logre hacer que funcione
+				} else {
+					entry.target.classList.remove("is-visible");
+					console.log("El elemento", entry.target, "ya no está visible.");
+				}
+			});
+		}
+		// {
+		// 	// Opciones (opcional)
+		// 	root: null, // null por defecto es el viewport
+		// 	rootMargin: "0px", // margen alrededor del root
+		// 	threshold: 0.5, // un número o array de números, indica qué porcentaje del target debe ser visible para disparar el callback (0.5 = 50%)
+		// }
+	);
+
+	// Seleccionar todos los elementos que queremos observar
+	const miElemento = document.querySelectorAll(".container__element");
+
+	// Empezar a observar cada elemento
+	miElemento.forEach((elemento) => {
+		observer.observe(elemento);
+	});
+
+	// Para dejar de observar
+	// observer.unobserve(miElemento);
+	// Para desconectar el observador completamente (deja de observar todos los elementos)
+	// observer.disconnect();
+</script>

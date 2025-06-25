@@ -1,0 +1,27 @@
+---
+import Button from "../../../../../components/button/Button.astro";
+---
+
+<div id="caja">
+	<Button id="boton">Haz click aquí</Button>
+</div>
+<h4>Result</h4>
+<span class="result"> </span>
+<style>
+	#caja {
+		padding: 1rem;
+		background-color: var(--color-bg-secondary);
+	}
+</style>
+<script>
+	const $cajaDiv = document.getElementById("caja");
+	const $result = document.querySelector(".result");
+
+	$cajaDiv?.addEventListener("click", function (evento) {
+		$result &&
+			($result.innerHTML = `
+                <p class ="color-red">event.target: ${evento.target}</p> 
+                <p class ="color-green">event.currentTarget: ${evento.currentTarget}</p>
+            `);
+	});
+</script>

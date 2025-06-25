@@ -1,0 +1,116 @@
+---
+layout: "/layout.astro"
+---
+
+import IntersectionOpserver from "./examples/intersection-opserver/IntersectionOpserver.astro";
+
+# Intersection Observer
+
+IntersectionObserver es una API web de JavaScript que te permite detectar de forma asíncrona cuándo un elemento (el "target") entra o sale del área visible de otro elemento (el "root", que por defecto es el viewport del navegador) o cuándo se cruza una cierta cantidad de esa área.
+
+¿Cómo funciona?
+
+En lugar de depender de eventos de scroll costosos o bucles de polling manuales, IntersectionObserver optimiza el proceso. Configuras un observador con un elemento "root" y uno o varios elementos "target". Cuando el "root" se desplaza, el navegador verifica de forma eficiente si alguno de los "target" observados ha cambiado su estado de "intersección". Si cambia, se dispara una función de callback que tú proporcionas.
+
+```css
+.container {
+	columns: 2;
+}
+img {
+	margin-bottom: 1rem;
+}
+/* Estilo inicial */
+.elemento-observado {
+	opacity: 0;
+	transform: translateY(100px);
+	transition: opacity 1s ease-in-out, transform 0.5s ease-in-out;
+}
+/* Estilo cuando es visible */
+.elemento-observado.is-visible {
+	transform: translateY(0);
+	opacity: 1;
+}
+```
+
+```js
+// Crear un observador
+const observer = new IntersectionObserver(
+	(entries, observer) => {
+		entries.forEach((entry) => {
+			// entry.isIntersecting es true si el elemento está en el root (o cruza el umbral)
+			if (entry.isIntersecting) {
+				entry.target.classList.add("is-visible");
+				console.log("El elemento", entry.target, "está visible!");
+				// Opcionalmente, dejar de observar si solo necesitas saberlo una vez
+				// observer.unobserve(entry.target); // no logre hacer que funcione
+			} else {
+				entry.target.classList.remove("is-visible");
+				console.log("El elemento", entry.target, "ya no está visible.");
+			}
+		});
+	}
+	// {
+	// 	// Opciones (opcional)
+	// 	root: null, // null por defecto es el viewport
+	// 	rootMargin: "0px", // margen alrededor del root
+	// 	threshold: 0.5, // un número o array de números, indica qué porcentaje del target debe ser visible para disparar el callback (0.5 = 50%)
+	// }
+);
+
+// Seleccionar todos los elementos que queremos observar
+const miElemento = document.querySelectorAll(".container__element");
+
+// Empezar a observar cada elemento
+miElemento.forEach((elemento) => {
+	observer.observe(elemento);
+});
+
+// Para dejar de observar
+// observer.unobserve(miElemento);
+// Para desconectar el observador completamente (deja de observar todos los elementos)
+// observer.disconnect();
+```
+
+<IntersectionOpserver />
+
+## Opciones Extra
+
+las opciones (el segundo argumento) que le pasas al constructor `IntersectionObserver` te permiten personalizar cómo y cuándo el observador dispara su función de callback. Las opciones más importantes son:
+
+1.  **`root`**:
+
+    - **Qué es:** Es el elemento que se utiliza como "viewport" o contenedor para verificar la intersección.
+    - **Valor por defecto:** `null`. Si es `null` o no se especifica, se utiliza por defecto el viewport del navegador (la ventana visible).
+    - **Para qué sirve:** Te permite observar la intersección de un elemento **dentro de otro elemento scrollable** en lugar de solo dentro de la ventana del navegador. Por ejemplo, si tienes un contenedor con `overflow: auto` y elementos dentro, puedes usar ese contenedor como `root`.
+
+2.  **`rootMargin`**:
+
+    - **Qué es:** Un margen alrededor del `root` (ya sea el viewport o un elemento específico) que expande o encoge su área de intersección.
+    - **Valor por defecto:** `'0px 0px 0px 0px'` (o simplemente `'0px'`).
+    - **Formato:** Una cadena de texto similar a la propiedad CSS `margin` (por ejemplo, `'10px 20px 30px 40px'` para top, right, bottom, left; o `'10px 20px'` para top/bottom, left/right).
+    - **Para qué sirve:** Te permite hacer que el observador se active **antes o después** de que el elemento entre o salga completamente del `root` visual. Por ejemplo, un `rootMargin: '50px'` hará que el callback se dispare cuando el elemento esté a 50px de entrar en el viewport, lo cual es útil para precargar contenido.
+
+3.  **`threshold`**:
+    - **Qué es:** Un número o un array de números que representan los porcentajes de visibilidad del elemento `target` que deben cruzar el umbral para que se dispare el callback.
+    - **Valor por defecto:** `0`. Esto significa que el callback se dispara tan pronto como cualquier parte del elemento `target` entra o sale del `root`.
+    - **Formato:**
+      - Un solo número entre 0.0 y 1.0 (inclusive). `0.5` significa que el callback se dispara cuando el 50% del elemento es visible.
+      - Un array de números `[0, 0.25, 0.5, 0.75, 1]`. Esto significa que el callback se disparará cada vez que el elemento pase del 0%, 25%, 50%, 75% o 100% de visibilidad (en ambas direcciones).
+    - **Para qué sirve:** Te da un control fino sobre cuándo se considera que un elemento está "intersectando". Puedes usarlo para saber no solo _si_ es visible, sino _cuánto_ de él es visible.
+
+Aquí tienes un ejemplo de cómo se usarían en el constructor:
+
+```javascript
+const options = {
+	root: document.querySelector("#mi-contenedor-scroll"), // Usar un elemento específico como root
+	rootMargin: "0px 0px -50px 0px", // Reduce el área visible en 50px por abajo
+	threshold: [0, 0.25, 0.5, 0.75, 1], // Activar el callback en cada cuarto de visibilidad
+};
+
+const observer = new IntersectionObserver(callback, options);
+
+// Luego, observas los elementos que quieres dentro de ese root
+// observer.observe(miElementoDentroDelContenedor);
+```
+
+Usar estas opciones te permite adaptar el comportamiento del `IntersectionObserver` a las necesidades específicas de tu aplicación.

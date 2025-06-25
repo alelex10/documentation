@@ -1,0 +1,78 @@
+---
+layout: "/layout.astro"
+---
+
+# Flujos de Trabajo en Git
+
+En Git existen varios flujos de trabajo que nos permiten organizar el desarrollo de un proyecto. Cada uno de estos flujos tiene sus ventajas y desventajas.
+
+---
+
+## 1. GitFlow
+
+### Ramas Principales
+- **Main**: Rama principal del proyecto, representa la versión de producción. El código aquí debe ser siempre estable.
+- **Develop**: Rama de integración donde se unen las funcionalidades para futuras versiones.
+
+### Implementación
+1. Se crean ramas `feature` a partir de `develop`.
+2. Cuando una funcionalidad está lista, se fusiona con `develop` mediante un pull-request.
+3. Para desplegar en producción:
+   - Se crea una rama `release` desde `develop`.
+   - Se realizan ajustes finales y pruebas.
+   - Se puede deployar a demo, staging o preproducción.
+4. Si hay ajustes necesarios:
+   - Se puede modificar directamente en la rama `release` o crear una rama `fix`.
+5. Los cambios en `release` se integran también en `develop`.
+6. Para correcciones urgentes en producción:
+   - Se crea una rama `hotfix` directamente desde `main`.
+
+### Conclusión GitFlow
+- **Ventajas**: Estructura clara para proyectos con versiones planificadas.
+- **Desventajas**:
+  - Complejo y difícil de entender.
+  - Genera burocracia para iteraciones rápidas.
+  - Alto mantenimiento y posible desincronización de ramas.
+  - Dificulta la integración continua y el despliegue continuo.
+
+---
+
+## 2. Trunk-based Development (TBD)
+
+### Características Principales
+- Se trabaja directamente en la rama principal (`main`).
+- El código en `main` siempre debe estar estable y listo para despliegue.
+
+### Implementación
+1. Las funcionalidades se desarrollan en ramas `feature` cortas creadas desde `main`.
+2. Cada `feature` se integra en `main` mediante un pull-request.
+3. Es importante mantener estas ramas cortas para evitar divergencias.
+4. Un sistema de Integración Continua (CI) asegura que `main` esté estable.
+5. Para correcciones urgentes:
+   - Se crean ramas `hotfix` que se integran en `main`.
+6. Cada cambio en `main` puede ser desplegado automáticamente.
+
+### Conclusión TBD
+- **Ventajas**:
+  - Simple y fácil de entender.
+  - Permite iteraciones rápidas.
+  - Reduce el mantenimiento y los conflictos.
+  - Facilita la integración continua y el despliegue continuo.
+  - Fomenta la colaboración y comunicación en el equipo.
+- **Desventajas**:
+  - Requiere disciplina para mantener `main` estable.
+  - No es adecuado para proyectos con versiones planificadas.
+
+---
+
+## Comparación de Flujos de Trabajo
+
+| Característica               | GitFlow                             | Trunk-based Development         |
+|------------------------------|------------------------------------|----------------------------------|
+| Complejidad                  | Alto                               | Bajo                             |
+| Ramas Principales            | `main` y `develop`                  | Solo `main`                     |
+| Iteraciones                  | Largas y planificadas               | Cortas y rápidas                 |
+| Mantenimiento                | Alto                               | Bajo                             |
+| Integración Continua          | Difícil                            | Fácil                           |
+| Despliegue Continuo          | Difícil                            | Fácil                           |
+| Adecuación                   | Proyectos con versiones planificadas| Proyectos ágiles y modernos      |

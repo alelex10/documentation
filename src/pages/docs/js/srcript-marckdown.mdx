@@ -1,0 +1,17 @@
+---
+layout: "/layout.astro"
+---
+
+# Script en Marckdown
+
+- Para escribor códigos de JS en Marckdown se usa la sintaxis de backticks (`)
+
+- solo se pueden imprimir cosas en **etiquetas** (`<p>, <h1>...`)
+
+{
+  (() => {
+    const now = new Date();
+    return <p>La hora actual es: {now.toLocaleTimeString()}</p>;
+	console.log(now); // no se imprime
+  })()
+}

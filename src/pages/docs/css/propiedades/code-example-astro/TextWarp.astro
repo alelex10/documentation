@@ -1,0 +1,43 @@
+---
+interface Props {
+	textWrap: "balance" | "wrap" | "nowrap" | "pretty";
+}
+const { textWrap } = Astro.props;
+---
+
+<section class="container">
+	<span class="view__code">
+		<slot />
+	</span>
+
+	<span class="text-warp" class:list={["text__warp--" + textWrap]}>
+		<article>
+			<p>
+				Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi odio eaque, illum ullam sint quisquam doloremque repellendus et 
+			</p>
+		</article>
+	</span>
+</section>
+<style>
+	section {
+		gap: 1rem;
+		display: flex;
+		width: 100%;
+	}
+	.container > span {
+		width: 50%;
+	}
+
+	.text__warp--balance {
+		text-wrap: balance;
+	}
+	.text__warp--wrap {
+		text-wrap: wrap;
+	}
+	.text__warp--nowrap {
+		text-wrap: nowrap;
+	}
+	.text__warp--pretty {
+		text-wrap: pretty;
+	}
+</style>

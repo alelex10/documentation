@@ -2,8 +2,43 @@
 layout: "/layout.astro"
 ---
 
-## Comandos
+# Comandos
 
-### listar ramas remotas
+## listar ramas remotas
+
 Para listar ramas remotas puedo usar **`git ls-remote`**
+
 - luego si quiero traerme unsa rama remota puedo **`git fetch origin heads/<nombre-rama-remota>:<nombre-rama-nueva>`**
+
+## movernos a otra rama
+
+- **`git checkout <nombre-rama>`**: me muevo a una rama
+- **`git checkout HEAD^`**: me muevo a la rama anterior
+
+## revertir un commit
+
+Quieres decir **git revert**. Este comando en Git se utiliza para deshacer los cambios realizados por uno o más commits anteriores. A continuación, te explico cómo funciona:
+
+1. **Revertir un commit específico**:
+   ```bash
+   git revert <hash-del-commit>
+   ```
+   - Esto crea un nuevo commit que tiene los cambios opuestos al commit que indicaste.
+   - No elimina el commit original, solo "deshace" sus cambios.
+
+2. **Revertir un rango de commits**:
+   ```bash
+   git revert <hash-inicial>..<hash-final>
+   ```
+   - Puedes revertir múltiples commits de una vez.
+
+3. **Revertir sin confirmación**:
+   ```bash
+   git revert --no-edit <hash-del-commit>
+   ```
+   - Si quieres evitar que se abra el editor para modificar el mensaje del commit.
+
+### Importante:
+- Si estás trabajando en cambios no confirmados, debes primero hacer `git stash` o `git commit` antes de usar `git revert`.
+
+¿Necesitas más detalles?

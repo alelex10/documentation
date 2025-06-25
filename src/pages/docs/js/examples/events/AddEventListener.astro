@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Ejemplo add/removeEventListener</title>
+	</head>
+	<body>
+		<button class="bg-btn-primary w-fit p-2 rounded-2xl cursor-pointer" id="myButton"
+			>Haz clic aquí (antes de quitar)</button
+		>
+		<button class="bg-btn-primary w-fit p-2 rounded-2xl cursor-pointer" id="removeButton">Quitar el evento</button>
+		<p id="message"></p>
+
+		<script>
+			// Obtener referencias a los elementos
+			const myButton = document.getElementById("myButton");
+			const removeButton = document.getElementById("removeButton");
+			const messageParagraph = document.getElementById("message");
+
+			// Definir la función que se ejecutará cuando ocurra el evento
+			// Es importante que sea una función con nombre o almacenada en una variable
+			// para poder referenciarla al quitar el listener.
+
+			function handleClick() {
+				if (messageParagraph) messageParagraph.textContent += "¡Botón clicado!";
+				console.log("Botón clicado");
+			}
+
+			// 1. Añadir el event listener
+			myButton && myButton.addEventListener("click", handleClick);
+
+			// Añadir un listener al botón de quitar para demostrar removeEventListener
+			removeButton &&
+				removeButton.addEventListener("click", () => {
+					// 2. Quitar el event listener
+					// Se pasa el mismo tipo de evento ('click') y la misma referencia a la función (handleClick)
+					myButton && myButton.removeEventListener("click", handleClick);
+					messageParagraph &&
+						(messageParagraph.innerHTML =
+							"<br>(Evento de clic quitado. Haz clic en el primer botón, ya no hará nada.)");
+					console.log("Evento de clic quitado");
+				});
+		</script>
+	</body>
+</html>

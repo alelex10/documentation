@@ -1,4 +1,14 @@
 @import "tailwindcss";
+
+@theme {
+	--color-bg-primary: oklch(21% 0.04 265);
+	--color-bg-secondary: oklch(15% 0.04 265);
+	--color-text-link: oklch(90% 0.3 265);
+	--color-text-primary: oklch(85% 0.04 265);
+	--color-text-secondary: oklch(95% 0.04 265);
+	--color-btn-primary: oklch(40% 0.04 265);
+}
+
 :root {
 	--spacing-extra: 2rem;
 	--spacing-between: 1.5rem;
@@ -6,9 +16,16 @@
 p{
 	margin: 0 0 1rem 0;
 }
+strong{
+	color: oklch(80% 0.2 265);
+}
+h1,h2,h3,h4,h5,h6{
+	color: var(--color-text-secondary);
+}
 h1 {
 	margin: var(--spacing-between) 0;
 	position: relative;
+	width: fit-content;
 	font-size: 3rem;
 	left: calc(var(--spacing-extra) / 2.5);
 	font-weight: 500;
@@ -30,7 +47,7 @@ h1 {
 	}
 }
 h2 {
-	margin: .5rem 0;
+	margin: .5rem 0 ;
 	font-size: 2rem;
 	font-weight: 500;
 	line-height: 1.1;
@@ -39,6 +56,7 @@ h2 {
 	&::first-letter {
 		text-transform: uppercase;
 	}
+	
 }
 h3 {
 	font-size: 1.5rem;
@@ -82,9 +100,22 @@ ul {
 	margin: 3px 3px 3px 3px;
 }
 li {
-	margin: 0;
+
 	margin-left: var(--spacing-extra);
 	list-style: circle;
+	& > ul {
+		margin-left: var(--spacing-extra);
+		
+	}
+	&  li{
+		list-style: disc;
+		&  li{
+			list-style: lower-alpha;
+		}
+	}
+}
+main li{
+	margin: 0 0 0.7rem 0;
 }
 section {
 	max-width: 75ch;
@@ -168,10 +199,4 @@ pre::-webkit-scrollbar-thumb {
 
 pre::-webkit-scrollbar-thumb:hover {
     background: #444;
-}
-
-@theme {
-	--color-bg-primary: oklch(21% 0.04 265);
-	--color-text-link: oklch(90% 0.3 265);
-	--color-text-primary: oklch(85% 0.04 265);
 }

@@ -1,0 +1,234 @@
+---
+layout: "/layout.astro"
+---
+
+import AddEventListener from "./examples/events/AddEventListener.astro";
+import EventTargetExample from "./examples/events/EventTargetExample.astro";
+
+# Eventos JS
+
+- Los eventos son acciones que se pueden realizar en un elemento HTML, como hacer clic en un botón, mover el mouse sobre un elemento, o presionar una tecla en el teclado.
+- Los eventos se pueden asociar a elementos HTML utilizando el atributo **on** o el atributo **addEventListener**.
+
+<button onclick="alert('¡Haz clic en el botón!')">Haz clic en mi botón</button>
+
+```html
+<button onclick="alert('¡Haz clic en el botón!')">Haz clic en mi botón</button>
+```
+
+## addEventListener y removeEventListener
+
+Claro, aquí tienes un ejemplo básico en JavaScript que muestra cómo usar `addEventListener` y `removeEventListener`.
+
+La clave para `removeEventListener` es pasar la _misma_ referencia a la función que se usó con `addEventListener`.
+
+```html
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Ejemplo add/removeEventListener</title>
+	</head>
+	<body>
+		<button id="myButton">Haz clic aquí (antes de quitar)</button>
+		<button id="removeButton">Quitar el evento</button>
+		<p id="message"></p>
+
+		<script>
+			// Obtener referencias a los elementos
+			const myButton = document.getElementById("myButton");
+			const removeButton = document.getElementById("removeButton");
+			const messageParagraph = document.getElementById("message");
+
+			// Definir la función que se ejecutará cuando ocurra el evento
+			// Es importante que sea una función con nombre o almacenada en una variable
+			// para poder referenciarla al quitar el listener.
+			function handleClick() {
+				messageParagraph.textContent = "¡Botón clicado!";
+				console.log("Botón clicado");
+			}
+
+			// 1. Añadir el event listener
+			myButton.addEventListener("click", handleClick);
+
+			// Añadir un listener al botón de quitar para demostrar removeEventListener
+			removeButton.addEventListener("click", () => {
+				// 2. Quitar el event listener
+				// Se pasa el mismo tipo de evento ('click') y la misma referencia a la función (handleClick)
+				myButton.removeEventListener("click", handleClick);
+				messageParagraph.textContent = "Evento de clic quitado. Haz clic en el primer botón, ya no hará nada.";
+				console.log("Evento de clic quitado");
+			});
+		</script>
+	</body>
+</html>
+```
+
+En este ejemplo:
+
+1.  Definimos una función `handleClick` que queremos que se ejecute cuando se haga clic en `myButton`.
+2.  Usamos `myButton.addEventListener('click', handleClick)` para asociar esa función al evento 'click' del botón.
+3.  Cuando se hace clic en `removeButton`, ejecutamos `myButton.removeEventListener('click', handleClick)`. Al pasar el mismo tipo de evento ('click') y la misma función (`handleClick`), se elimina el listener previamente añadido.
+
+Después de hacer clic en "Quitar el evento", si vuelves a hacer clic en "Haz clic aquí", ya no se ejecutará la función `handleClick`.
+
+Puedes probar este código pegándolo en un archivo `.html` y abriéndolo en tu navegador.
+
+<AddEventListener></AddEventListener>
+
+### Remover multiples listeners
+
+directamente no puedes eliminar "una lista de eventos" en una sola llamada con removeEventListener.
+
+La función removeEventListener elimina un único listener específico que fue añadido previamente con addEventListener. Para quitar un listener, debes proporcionar exactamente el mismo:
+
+## Delegación de eventos
+
+La delegación de eventos es un patrón en JavaScript donde se adjunta un único "listener" (escuchador) de eventos a un elemento padre, en lugar de adjuntar múltiples listeners a cada uno de sus elementos hijos.
+
+Cuando ocurre un evento (como un clic) en un elemento hijo, el evento "hace burbuja" (sube) a través del árbol DOM hasta el elemento padre donde se adjuntó el listener. El listener en el padre puede entonces reaccionar al evento y, utilizando la propiedad `event.target`, determinar qué elemento hijo específico desencadenó el evento.
+
+**Ventajas:**
+
+1.  **Mejor rendimiento:** Menos listeners significan menos memoria utilizada y menos trabajo para el navegador al configurar y gestionar los eventos.
+2.  **Simplifica la gestión de elementos dinámicos:** No necesitas adjuntar listeners a nuevos elementos que se añaden al DOM después de la carga inicial. El listener del padre manejará automáticamente los eventos de estos nuevos hijos.
+3.  **Código más limpio y fácil de mantener:** Reduces la cantidad de código para gestionar eventos.
+
+Aquí tienes un ejemplo básico:
+
+```html
+<!-- ... otros elementos ... -->
+
+<ul id="listaCompras">
+	<li>Manzanas</li>
+	<li>Plátanos</li>
+	<li>Naranjas</li>
+</ul>
+
+<!-- ... otros elementos ... -->
+```
+
+```javascript
+// Adjuntamos el listener al ul padre, no a cada li
+const lista = document.getElementById("listaCompras");
+
+lista.addEventListener("click", function (evento) {
+	// Comprobamos si el clic fue en un elemento li
+	if (evento.target.tagName === "LI") {
+		console.log("Hiciste clic en:", evento.target.textContent);
+		// Puedes añadir clases, remover el elemento, etc.
+		evento.target.classList.toggle("seleccionado");
+	}
+});
+
+// Puedes añadir nuevos li dinámicamente y el listener del padre funcionará con ellos.
+// const nuevoItem = document.createElement('li');
+// nuevoItem.textContent = 'Uvas';
+// lista.appendChild(nuevoItem); // Un clic en Uvas también será capturado por el listener del ul
+```
+
+En este ejemplo, un solo listener en `ul#listaCompras` maneja los clics en cualquier `li` dentro de él, incluyendo los que se puedan añadir más tarde.
+
+### event.target y event.currentTarget
+
+Imagina que tienes este HTML:
+
+```html
+<div id="caja">
+	<button id="boton">Haz click aquí</button>
+</div>
+<span class="result">
+	<h4>Result</h4>
+</span>
+```
+
+Y este código JavaScript:
+
+```javascript
+const $cajaDiv = document.getElementById("caja");
+const $result = document.querySelector(".result");
+
+$cajaDiv?.addEventListener("click", function (evento) {
+	$result &&
+		($result.innerHTML = `
+                <p class ="color-red">event.target: ${evento.target}</p>
+                <p class ="color-green">event.currentTarget: ${evento.currentTarget}</p>
+            `);
+});
+```
+
+#### Example
+
+<EventTargetExample></EventTargetExample>
+
+**Explicación:**
+
+1.  Tenemos un `div` con ID `caja` y dentro de él un `button` con ID `boton`.
+2.  Adjuntamos el "escucha" de click (el `addEventListener`) al `div` (`cajaDiv`).
+
+**Ahora, veamos qué pasa cuando haces click:**
+
+- **Si haces click directamente en el `<button>` (el "juguete"):**
+
+  - `event.target` será el elemento `<button id="boton">`.
+  - `event.currentTarget` será el elemento `<div> id="caja"`.
+  - Verás en la consola algo como:
+    ` event.target: <button id="boton">...</button>
+    event.currentTarget: <div id="caja">...</div>
+    ***
+    `
+    Aquí son diferentes: el evento empezó en el botón, pero el listener está en el div.
+
+- **Si haces click directamente en el `<div>` (la "caja") pero _fuera_ del botón:**
+  - `event.target` será el elemento `<div> id="caja"`.
+  - `event.currentTarget` será el elemento `<div> id="caja"`.
+  - Verás en la consola algo como:
+    ` event.target: <div id="caja">...</div>
+    event.currentTarget: <div id="caja">...</div>
+    ***
+    `
+    Aquí son iguales: el evento empezó en el div, y el listener también está en el div.
+
+Este ejemplo muestra claramente cómo `event.target` apunta al elemento específico donde se originó el evento, mientras que `event.currentTarget` apunta al elemento donde el listener está "escuchando".
+
+Puedes probar este código en un archivo HTML simple para verlo en acción.
+
+### uso de closest()
+
+El método `closest()` en JavaScript busca el ancestro (incluyendo el propio elemento) más cercano que coincida con un selector CSS especificado. Retorna el elemento que coincide o `null` si no encuentra ningún ancestro que coincida.
+
+Es útil para la delegación de eventos, permitiéndote encontrar fácilmente el elemento padre (o un ancestro más arriba) al que está asociado un listener, incluso si el evento se disparó en un elemento hijo.
+
+Aquí tienes un ejemplo:
+
+Supongamos que tienes esta estructura HTML:
+
+```html
+<div class="container">
+	<ul class="list">
+		<li class="list-item">
+			<button class="my-button">Click Me</button>
+		</li>
+	</ul>
+</div>
+```
+
+Y quieres encontrar el `<li>` cuando haces clic en el botón.
+
+```javascript
+const button = document.querySelector(".my-button");
+
+button.addEventListener("click", function (event) {
+	// 'this' o 'event.target' es el botón que fue clickeado
+	const listItem = event.target.closest(".list-item");
+
+	if (listItem) {
+		console.log("Encontrado el <li> ancestro:", listItem);
+		// Puedes hacer algo con listItem, como cambiar su estilo
+		listItem.style.backgroundColor = "yellow";
+	} else {
+		console.log("No se encontró un <li> ancestro.");
+	}
+});
+```
+
+En este ejemplo, `event.target` es el botón. Al llamar a `closest('.list-item')` en el botón, JavaScript sube por la jerarquía del DOM (del botón al `<li>`, luego al `<ul>`, etc.) hasta que encuentra un elemento que coincide con el selector `.list-item`. En este caso, encuentra el `<li>` inmediatamente superior y lo retorna.

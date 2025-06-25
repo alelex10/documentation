@@ -1,0 +1,49 @@
+---
+layout: "/layout.astro"
+---
+
+# API REST
+
+Una **API REST** (Representational State Transfer) es un tipo de **interfaz de programación de aplicaciones (API)** que sigue principios y restricciones específicas diseñadas para la **comunicación entre sistemas a través de la web**, generalmente usando el protocolo **HTTP**.
+
+---
+
+## ✅ ¿Qué es una API REST?
+
+Una **API REST** permite a diferentes aplicaciones intercambiar datos y operaciones usando **peticiones HTTP estándar**, como:
+
+* `GET` – para **obtener datos**
+* `POST` – para **crear nuevos datos**
+* `PUT` – para **actualizar datos existentes**
+* `DELETE` – para **eliminar datos**
+
+### Características clave de una API REST:
+
+* **Sin estado (stateless):** cada petición contiene toda la información necesaria; el servidor no guarda el estado entre peticiones.
+* **Uso de HTTP:** las operaciones se realizan usando métodos HTTP estándar.
+* **Representaciones:** los recursos (por ejemplo, usuarios, productos) se representan en formatos como JSON o XML.
+* **Acceso por URL:** cada recurso tiene su propia URL única, por ejemplo:
+  `https://api.ejemplo.com/usuarios/123`
+
+---
+
+## 🔄 Diferencias entre API REST y otros tipos de APIs
+
+| Característica           | **API REST**                    | **SOAP** (otro tipo de API)       | **GraphQL** (API moderna)               |
+| ------------------------ | ------------------------------- | --------------------------------- | --------------------------------------- |
+| **Protocolo**            | HTTP                            | SOAP (usa XML sobre HTTP u otros) | HTTP                                    |
+| **Formato de datos**     | JSON o XML                      | Solo XML                          | JSON                                    |
+| **Flexibilidad**         | Alta                            | Menor (estructuras rígidas)       | Muy alta (consultas personalizadas)     |
+| **Curva de aprendizaje** | Baja a moderada                 | Alta                              | Moderada                                |
+| **Velocidad/ligereza**   | Rápida y liviana                | Pesada, más lenta                 | Rápida, pero requiere más planificación |
+| **Estilo**               | Arquitectura basada en recursos | Protocolo estricto de mensajería  | Lenguaje de consulta para APIs          |
+
+---
+
+## 📝 En resumen:
+
+* **REST** es el tipo de API más común hoy en día por su **simplicidad, rapidez y compatibilidad con la web**.
+* Se diferencia de otras APIs como **SOAP** (más rígida y basada en XML) y **GraphQL** (más flexible y moderna, pero más compleja).
+* Si estás construyendo o usando una API para aplicaciones web o móviles, **REST suele ser la opción más práctica y adoptada**.
+
+¿Te gustaría un ejemplo de cómo se ve una petición REST en código?

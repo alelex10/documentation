@@ -1,0 +1,64 @@
+---
+layout: "/layout.astro"
+---
+
+import Outline from "./code-example-astro/Outline.astro";
+import TextWrap from "./code-example-astro/TextWarp.astro";
+
+# Propiedades
+
+### mix-blend-mode
+
+- Le dice a mi letra que se "combine" con mi color de fondo
+
+```css
+h1 {
+	mix-blend-mode: difference;
+}
+```
+
+## outline
+
+### Border vs outline
+
+Los bordes y los contornos son muy similares. Sin embargo, los contornos difieren de los bordes de la siguiente manera:
+
+Los contornos no ocupan espacio, son dibujados por encima del elemento. Por lo tanto, su aparición u ocultamiento no causa un redibujado de las cajas. No suma en el tamaño de la caja y no hay movimiento o desplazamiento de los elementos como con border.
+
+Los contornos pueden no ser rectangulares. Si el elemento se distribuye en varias líneas, el contorno no forma un rectágulo para encerrar a todo el elemento. A diferencia de los bordes, el contorno no está abierto en algunos lados:
+
+## Ejemplo
+
+<Outline />
+
+## Text wrap
+
+<TextWrap textWrap="balance">
+```css
+.texto {
+  text-wrap: balance;
+}
+```
+</TextWrap>
+<TextWrap textWrap="nowrap">
+```css
+.texto {
+  text-wrap: nowrap;
+}
+```
+</TextWrap>
+<TextWrap textWrap="wrap">
+```css
+.texto {
+  text-wrap: wrap;
+}
+```
+</TextWrap>
+<TextWrap textWrap="pretty">
+```css
+.texto {
+  text-wrap: pretty;
+}
+```
+</TextWrap>
+

@@ -1,0 +1,19 @@
+---
+layout: "/layout.astro"
+---
+
+# Definiciones
+
+- **VSC**: version control system
+- **repositorio**: cualquier proyecto getionado por git o un **VSC** o lugar donde se guarda algo
+- **hardware**: algo duro, dificil de modificar
+- **software**: algo bando, facil de modificar
+- **Detached HEAD**:
+    - Ocurre cuando la rama activa no se encuentra en el repositorio local
+    - Cualquier cambio realizado en este estado no se guardará porque no está asociado a ninguna rama
+    - Es peligroso porque podrías perder tus cambios ya que no tendrás una rama asociada para acceder a ellos
+    - En resumen, un detached HEAD significa que estás trabajando sin una rama asociada, lo que puede llevar a la pérdida de cambios si no manejas correctamente el estado de tu repositorio.
+    - Puedo usar **`git checkout -b <nombre-rama>`** o **`git switch -c <nombre-rama>`** para crear una rama nueva y asociarla al HEAD
+    - para volver a la rama principal usaria **`git switch -`**
+
+

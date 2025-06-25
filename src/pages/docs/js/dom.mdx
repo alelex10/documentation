@@ -1,0 +1,65 @@
+---
+layout: "/layout.astro"
+---
+
+# DOM
+
+## convenciones
+
+- $nombreElemento : se le coloca _$_ al inicio para diferenciar a los elementos del DOM de las ** variables norma**
+
+## Query Selector Anidado
+
+- Query Selector anidado es cuando se hace un query selector dentro de otro query selector
+
+```html
+<div class="contenedor">
+	<p class="parrafo">Esto es un parrafo</p>
+</div>
+```
+
+
+```js
+const contenedor = document.querySelector(".contenedor");
+/* se usa "contenedor" en vez de "document" */
+const parrafo = contenedor.querySelector(".parrafo");
+```
+## Query Selector All
+
+- Query selector selecciona todos los elementos que cumplan con la condicion
+- No me da un **array**, sino que me da un **NodeList**
+
+```html
+<div class="contenedor">
+	<p class="parrafo">Esto es un parrafo</p>
+	<p class="parrafo">Esto es un parrafo</p>
+	<p class="parrafo">Esto es un parrafo</p>
+	<p class="parrafo">Esto es un parrafo</p>
+</div>
+
+<script>
+	const parrafos = document.querySelectorAll(".parrafo");
+	console.log(parrafos); // NodeList
+</script>
+```
+- puedo transformarlo en un array con el metodo **Array.from**
+- tambien lo puedo hacer con **spread operator**
+
+```js
+const parrafos = document.querySelectorAll(".parrafo");
+const parrafosArray = Array.from(parrafos);
+console.log(parrafosArray); // Array
+
+const parrafos = document.querySelectorAll(".parrafo");
+const parrafosArray = [...parrafos];
+console.log(parrafosArray); // Array
+```
+### ¿Por que NodeList y no Array?
+
+`querySelectorAll` devuelve un `NodeList` y no un `Array` directamente por varias razones:
+
+1.  **Razones Históricas:** Cuando se introdujo `querySelectorAll`, los métodos de `Array` como `map`, `filter`, etc., no estaban tan estandarizados o disponibles universalmente en todos los navegadores como lo están hoy. `NodeList` era una forma de proporcionar una colección iterable sin depender de esos métodos específicos.
+2.  **Optimización y Rendimiento:** En algunas implementaciones del DOM, devolver un `NodeList` (incluso uno estático como el de `querySelectorAll`) puede ser ligeramente más eficiente que crear una copia completa en un `Array`, especialmente para colecciones muy grandes.
+3.  **Tipo Específico para el DOM:** `NodeList` es un tipo de colección específico para el DOM, diseñado para manejar nodos. Aunque se comporta de manera similar a un array (es iterable y tiene una propiedad `length`), es un objeto DOM distinto.
+
+Aunque `NodeList` no tiene todos los métodos de `Array` por defecto, puedes iterar sobre él con `forEach` o convertirlo fácilmente a un array estándar usando `Array.from()` o el operador spread (`...`).
