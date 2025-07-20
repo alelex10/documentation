@@ -1,0 +1,18 @@
+---
+import Layout from "../../../../layout.astro";
+
+export function getStaticPaths() {
+	return [
+		{ params: { dog: "clifford" }, props: { owner: "John" } },
+		{ params: { dog: "rover" }, props: { owner: "Jane" } },
+		{ params: { dog: "spot" }, props: { owner: "Bob" } },
+	];
+}
+const { dog } = Astro.params;
+const { owner } = Astro.props;
+---
+
+<Layout title={dog}>
+	<h2>Dog {dog}</h2>
+	<h2>Owner: {owner}</h2>
+</Layout>

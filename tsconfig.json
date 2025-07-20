@@ -18,6 +18,9 @@
       ],
       "/*": [
         "src/pages/*"
+      ],
+      "@public/*": [
+        "public/*"
       ]
     },
     "strictNullChecks": true, // add if using `base` template

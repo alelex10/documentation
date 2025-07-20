@@ -1,0 +1,38 @@
+---
+layout: "/layout.astro"
+---
+
+# Configuración de TypeScript
+
+⚙️ Instalación y configuración
+
+Para inicializar un proyecto con TypeScript (una de las tantas formas de hacerlo):
+
+```bash
+mkdir mi-proyecto-ts
+cd mi-proyecto-ts
+pnpm init
+pnpm add -D typescript
+nppm tsc --init
+```
+
+El comando `npx tsc --init` genera un archivo **tsconfig.json** con la configuración básica para TypeScript.
+
+## Archivo `tsconfig.json`
+
+- Alguna de sus configuraciones son
+
+```json
+{
+	"exclude": ["dist, node_modules"], // excluye la carpeta dist de la compilacion(comprobacion de tipos)
+	"outDir": "./dist" // carpeta que contiene la compilacion del codigo
+}
+```
+
+- luego para ejecutar el archivo copilado con `npx tsc`, que se encuentra en `./dist`, puedo crear un `script` en `package.json` ej: `"start": node ./dist/index.js`
+
+## Archivo `package.json`
+
+- **tsc:** quiere decir ``typescript compiler``
+- Para **copilar** el codigo escrito con tscript, puedo crear un `script` en `package.json` ej: `"build": "tsc"`
+  - Luego para 

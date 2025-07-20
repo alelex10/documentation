@@ -1,0 +1,49 @@
+---
+layout: "/layout.astro"
+---
+
+# Rutas Dinamicas
+
+El modo de salida de Astro es estática por defecto, estas páginas se generan durante la compilación, por lo que debe predeterminar la lista de autores que recibirán el archivo correspondiente. En el modo SSR, se generará una página al solicitar cualquier ruta que coincida.
+
+Una ruta dinamica debe exportar una funcion getStaticPaths() que devuelve un arreglo de objetos con una propiedad params.Cada uno de estos objetos generar una ruta correspondiente.
+
+- **Astro.params**: contiene los parámetros dinámicos de la ruta.
+- **Astro.props**: contiene las propiedades de la ruta dinámica.
+
+pages/docs/examples/routing/**[dog]**.astro
+```astro
+---
+export function getStaticPaths() {
+  return [
+    { params: { dog: "clifford" }, props: { owner: "John" }},
+    { params: { dog: "rover" }, props: { owner: "Jane" }},
+    { params: { dog: "spot" }, props: { owner: "Bob" }},
+  ];
+}
+const { dog } = Astro.params
+const { owner } = Astro.props
+---
+
+<h1>{dog}</h1>
+```
+### Rutas dinamicas en Astro
+- <a href="./examples/clifford">clifford</a>
+- <a href="./examples/rover">rover</a>
+- <a href="./examples/spot">spot</a>
+
+# Errores
+
+Usar `getStaticPaths` en Astro para generar páginas dinámicas a partir de una API es un patrón común y potente, pero presenta algunos desafíos potenciales, principalmente porque `getStaticPaths` se ejecuta *solo* durante el proceso de construcción (build) de tu sitio.
+
+Aquí están los problemas clave que podrías encontrar:
+
+1.  **Datos Obsoletos:** Si los datos de tu API cambian con frecuencia, las páginas estáticas generadas durante el build no reflejarán esos cambios hasta que vuelvas a construir el sitio. `getStaticPaths` no consulta la API en tiempo real cuando un usuario visita la página.
+2.  **Errores de la API durante el Build:** Si la llamada a la API dentro de `getStaticPaths` falla durante el proceso de construcción (por ejemplo, problemas de red, API caída, errores de autenticación), tu build fallará o generará un conjunto incompleto de páginas. Debes manejar los errores robustamente.
+3.  **Rendimiento y Escalabilidad del Build:** Si tu API devuelve un gran número de elementos (miles o millones), `getStaticPaths` tendrá que procesar todos ellos durante el build para generar las rutas. Esto puede hacer que el proceso de construcción sea muy lento y consuma muchos recursos.
+4.  **Gestión de Datos Adicionales:** Tu ejemplo solo usa el parámetro `dog`. Si necesitas mostrar más información sobre cada perro (nombre completo, raza, descripción) que también viene de la API, tendrás dos opciones:
+    *   Fetch la información completa para cada perro *dentro* del componente Astro (lo que puede ser ineficiente si hay muchos perros y el fetch es lento).
+    *   Fetch toda la información relevante dentro de `getStaticPaths` y pasarla a través de la propiedad `props` del objeto de retorno, lo cual es más eficiente para el build pero puede ser complejo de manejar si los datos son muy grandes.
+
+
+En resumen, la mayor consideración es que la generación es *estática* y ocurre en tiempo de construcción. Esto es ideal para contenido que no cambia a menudo (como artículos de blog), pero menos adecuado para datos en tiempo real o que cambian constantemente.

@@ -1,0 +1,95 @@
+---
+layout: "/layout.astro"
+---
+
+# Tipos
+
+## Inferir tipos
+
+- Los tipos de datos se inferen de la asignación
+- Luego no se puede cambiar
+
+```ts
+/* El tipo que se infiere es string */
+let nombreVariable = "Santiago";
+```
+
+## Tuplas
+
+```ts
+// Tuplas (arrays con número fijo de elementos con tipos específicos)
+let userInfo: [string, number] = ["Santiago", 28];
+```
+
+## unknown
+
+- No es igual a `any`
+  - por que luego le puedo asignar un tipo con `typeof nombreVariable = "string"`
+
+```ts
+let nombreVariable: unknown = "Santiago";
+if (typeof nombreVariable === "string") {
+	// se puede usar las propiedades de string dentro de este if
+}
+```
+
+### Asercion de tipos
+
+- `as`: se usa para forzar el tipado
+
+```ts
+// Aserciones de tipo
+let someValue: unknown = "This is a string"; // Esto es una cadena
+
+// Método 1: usando 'as'
+let stringLength: number = (someValue as string).length;
+
+// Método 2: usando sintaxis de ángulos (menos común, no funciona en JSX - React)
+let stringLength2: number = (<string>someValue).length;
+
+// Ejemplo del mundo real - Manipulación del DOM
+const input = document.getElementById("my-input") as HTMLInputElement;
+// Ahora podemos usar input.value, ya que TypeScript sabe que es un elemento input
+
+// Operador de aserción no nulo (!)
+function validateUser(user: string | null) {
+	// El ! le dice a TypeScript que estamos seguros de que user no es null
+	const username: string = user!;
+	return username.toUpperCase();
+}
+```
+
+## Tipos Para Funciones
+
+**Forma no tan usada:**
+
+```ts
+interface SumFunction {
+	(a: number, b: number): number;
+}
+
+const sum: SumFunction = (a, b) => {
+	return a + b;
+};
+```
+**otra forma:**
+```ts
+type SumFunction = (a: number, b: number) => number;
+
+const sum: SumFunction = (a, b) => {
+    return a + b;
+};
+```
+# Astro
+
+## Astro Props
+
+- Al definir una interfaz para Astro.props, se asignan automaticamente, de manera implicita, las propiedades de Astro.props
+
+```ts
+interface Props {
+    title: string;
+}
+/* No hace falta: const { title }: Props = Astro.props;} */
+const { title } = Astro.props;
+---
