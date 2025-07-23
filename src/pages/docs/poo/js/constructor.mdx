@@ -1,0 +1,38 @@
+---
+layout: "/layout.astro"
+---
+
+# Constructor
+
+## Propiedades automáticas en constructor
+```TypeScript
+class User {
+  // Propiedades con tipos explícitos
+  public id: number;
+  public name: string;
+  private email: string;
+  protected createdAt: Date;
+  readonly role: string;
+
+  constructor(id: number, name: string, email: string, role: string = 'user') {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.role = role;
+    this.createdAt = new Date();
+  }
+}
+```
+- se puede hace mas facil con la declaracion de propiedades en el constructor
+```TypeScript
+class Product {
+  // Declaración automática de propiedades en el constructor
+  constructor(
+    public id: number,
+    public name: string,
+    private price: number,
+    protected category: string,
+    readonly createdAt: Date = new Date()
+  ) {}
+}
+```

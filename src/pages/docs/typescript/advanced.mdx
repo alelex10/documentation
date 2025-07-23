@@ -43,7 +43,7 @@ updateUser(2, { email: "nuevo@email.com", age: 30 }); // Actualiza email y edad
 *   `Partial<T>` es extremadamente útil cuando se trata de operaciones de actualización donde es posible que solo desees modificar un subconjunto de las propiedades de un objeto.
 *   Al hacer que todas las propiedades sean opcionales, evitas tener que proporcionar valores predeterminados o manejar individualmente las propiedades que podrían faltar. Esto puede conducir a un código más limpio y fácil de mantener.
 
-## 🔒 `Required<T>`
+## 🔒 Required`<T>`
 
 Convierte todas las propiedades opcionales de un tipo en requeridas.
 
@@ -71,6 +71,114 @@ function validateConfig(config: Required<UserConfig>) {
 }
 ```
 
-## 🎯 `Pick<T, K>`
+## 🛠️ Utility Types en TypeScript
+
+TypeScript ofrece varios Utility Types que facilitan la manipulación y transformación de tipos. Aquí tienes algunos de los más útiles:
+
+### 🎯 Pick`<T, K>`
 
 Crea un nuevo tipo seleccionando solo propiedades específicas de un tipo existente.
+
+```typescript
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  inStock: boolean;
+}
+
+// Solo seleccionamos las propiedades que necesitamos
+type ProductSummary = Pick<Product, 'id' | 'name' | 'price'>;
+
+// Equivale a:
+// {
+//   id: number;
+//   name: string;
+//   price: number;
+// }
+
+function displayProductCard(product: ProductSummary) {
+  return `${product.name} - $${product.price}`;
+}
+```
+
+### 🚫 Omit`<T, K>`
+
+Crea un nuevo tipo excluyendo propiedades específicas de un tipo existente.
+
+```typescript
+interface Employee {
+  id: number;
+  name: string;
+  email: string;
+  salary: number;
+  department: string;
+}
+
+// Excluimos información sensible
+type PublicEmployee = Omit<Employee, 'salary'>;
+
+// Equivale a:
+// {
+//   id: number;
+//   name: string;
+//   email: string;
+//   department: string;
+// }
+
+function getPublicEmployeeInfo(employee: Employee): PublicEmployee {
+  const { salary, ...publicInfo } = employee;
+  return publicInfo;
+}
+```
+
+### 📝 Record`<K, T>`
+
+Crea un tipo con propiedades de tipo `K` y valores de tipo `T`.
+
+```typescript
+// Crear un diccionario con claves string y valores number
+type StatusCodes = Record<string, number>;
+
+const httpCodes: StatusCodes = {
+  'OK': 200,
+  'NOT_FOUND': 404,
+  'SERVER_ERROR': 500
+};
+
+// Usar con tipos más específicos
+type Theme = 'light' | 'dark' | 'auto';
+type ThemeConfig = Record<Theme, { background: string; text: string }>;
+
+const themeSettings: ThemeConfig = {
+  light: { background: '#ffffff', text: '#000000' },
+  dark: { background: '#000000', text: '#ffffff' },
+  auto: { background: 'system', text: 'system' }
+};
+```
+
+### 🔗 Otros Utility Types útiles
+
+*   `Exclude<T, U>` - Excluye tipos de una unión.
+    ```typescript
+    type Colors = 'red' | 'green' | 'blue' | 'yellow';
+    type PrimaryColors = Exclude<Colors, 'yellow'>; // 'red' | 'green' | 'blue'
+    ```
+*   `Extract<T, U>` - Extrae tipos de una unión.
+    ```typescript
+    type ExtractedColors = Extract<Colors, 'red' | 'blue'>; // 'red' | 'blue'
+    ```
+*   `NonNullable<T>` - Excluye `null` y `undefined`.
+    ```typescript
+    type MaybeString = string | null | undefined;
+    type DefinitelyString = NonNullable<MaybeString>; // string
+    ```
+*   `ReturnType<T>` - Obtiene el tipo de retorno de una función.
+    ```typescript
+    function getUser() {
+      return { id: 1, name: 'Juan' };
+    }
+    type UserReturnType = ReturnType<typeof getUser>; // { id: number; name: string; }
+    ```
