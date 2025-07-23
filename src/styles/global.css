@@ -6,7 +6,7 @@
 	--color-text-link: oklch(90% 0.3 265);
 	--color-text-primary: oklch(85% 0.04 265);
 	--color-text-secondary: oklch(95% 0.04 265);
-	--color-text-tertiary: oklch(95% 0.03 250);
+	--color-text-tertiary: oklch(80% 0.1 250);
 	--color-btn-primary: oklch(40% 0.04 265);
 }
 
@@ -27,7 +27,7 @@ h1 {
 	margin: var(--spacing-between) 0;
 	position: relative;
 	width: fit-content;
-	font-size: 3rem;
+	font-size: 2.3rem;
 	left: calc(var(--spacing-extra) / 2.5);
 	font-weight: 500;
 	line-height: 1.1;

@@ -25,9 +25,11 @@ let userInfo: [string, number] = ["Santiago", 28];
 
 - No es igual a `any`
   - por que luego le puedo asignar un tipo con `typeof nombreVariable = "string"`
+- typeof es una "guarda de tipo"
 
 ```ts
 let nombreVariable: unknown = "Santiago";
+/* a esto se lo conose como type narrowing */
 if (typeof nombreVariable === "string") {
 	// se puede usar las propiedades de string dentro de este if
 }
@@ -80,6 +82,13 @@ const sum: SumFunction = (a, b) => {
     return a + b;
 };
 ```
+# Union de tipos
+
+```ts
+type ID = string | number;
+```
+- si quiero hacer alguna operacion con alguno de ellos, se debe hacer mas `estrecho` el tipo
+
 # Astro
 
 ## Astro Props
@@ -92,4 +101,27 @@ interface Props {
 }
 /* No hace falta: const { title }: Props = Astro.props;} */
 const { title } = Astro.props;
----
+```
+# Tipos opcionales
+
+```ts
+interface Props {
+	title?: string;
+}
+```
+- no es lo mismo que `title: string | undefined;`
+	- al momento de instanciar la interfaz me pedira que declare la propiedad `title`
+	- no me dara la obcion de omitirla
+```ts
+interface Props {
+	title: string | undefined;
+}
+```
+# Genericos
+- no es buena practica colocar solo una letra para representar al generico `T`
+	- es mejor usar letra + nombre descriptivo `TNombreDelGenerico`
+```ts
+interface Props<TArrary> {
+	array: TArrary[];
+}
+```

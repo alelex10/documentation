@@ -24,8 +24,13 @@ El comando `npx tsc --init` genera un archivo **tsconfig.json** con la configura
 
 ```json
 {
+	"compilerOptions": {
+	"target": "ES2020", // version de ECMAScript a la que se compila el codigo
+	"target": "ESNext", // para decirle que copile en la ultima vercion de ECMAScript
+	"outDir": "./dist", // carpeta que contiene la compilacion del codigo
+	"strict": true // modo estricto para que typescript sea mas estricto con el codigo
+	},
 	"exclude": ["dist, node_modules"], // excluye la carpeta dist de la compilacion(comprobacion de tipos)
-	"outDir": "./dist" // carpeta que contiene la compilacion del codigo
 }
 ```
 

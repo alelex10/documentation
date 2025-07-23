@@ -1,0 +1,76 @@
+---
+layout: "/layout.astro"
+---
+
+## 1. 🛠️ Utility Types
+
+Los Utility Types son tipos predefinidos en TypeScript que nos permiten transformar y manipular otros tipos de manera eficiente. Son herramientas poderosas que nos ayudan a crear código más flexible y reutilizable.
+
+### 📋 Partial`<T>`
+
+Convierte todas las propiedades de un tipo en opcionales.
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+}
+
+// Todas las propiedades se vuelven opcionales
+type PartialUser = Partial<User>;
+
+// Equivale a:
+// {
+//   id?: number;
+//   name?: string;
+//   email?: string;
+//   age?: number;
+// }
+
+function updateUser(id: number, updates: Partial<User>) {
+  // Podemos actualizar solo algunas propiedades
+  console.log(`Actualizando usuario ${id}`, updates);
+}
+
+updateUser(1, { name: "Juan Carlos" }); // Solo actualiza el nombre
+updateUser(2, { email: "nuevo@email.com", age: 30 }); // Actualiza email y edad
+```
+
+**Important Considerations:**
+
+*   `Partial<T>` es extremadamente útil cuando se trata de operaciones de actualización donde es posible que solo desees modificar un subconjunto de las propiedades de un objeto.
+*   Al hacer que todas las propiedades sean opcionales, evitas tener que proporcionar valores predeterminados o manejar individualmente las propiedades que podrían faltar. Esto puede conducir a un código más limpio y fácil de mantener.
+
+## 🔒 `Required<T>`
+
+Convierte todas las propiedades opcionales de un tipo en requeridas.
+
+```ts
+interface UserConfig {
+  theme?: string;
+  language?: string;
+  notifications?: boolean;
+}
+
+type RequiredUserConfig = Required<UserConfig>;
+
+// Equivale a:
+// {
+//   theme: string;
+//   language: string;
+//   notifications: boolean;
+// }
+
+function validateConfig(config: Required<UserConfig>) {
+  // Todas las propiedades son obligatorias aquí
+  console.log(config.theme); // No hay riesgo de undefined
+  console.log(config.language);
+  console.log(config.notifications);
+}
+```
+
+## 🎯 `Pick<T, K>`
+
+Crea un nuevo tipo seleccionando solo propiedades específicas de un tipo existente.
