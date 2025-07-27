@@ -1,0 +1,95 @@
+---
+layout: "/layout.astro"
+title: 'Clases Abstractas en TypeScript (POO)'
+description: 'Una guía para entender qué son las clases abstractas, por qué son útiles y cómo implementarlas.'
+---
+
+# Clases Abstractas en TypeScript (POO)
+
+En la Programación Orientada a Objetos, las **clases abstractas** son un pilar fundamental para crear arquitecturas de software robustas y escalables. Actúan como plantillas base para otras clases, pero con una particularidad: no se pueden instanciar directamente.
+
+Su propósito principal es definir una estructura y un comportamiento comunes que las clases derivadas deben seguir.
+
+### ¿Qué define a una Clase Abstracta?
+
+1.  **No se pueden instanciar:** No puedes crear un objeto directamente de una clase abstracta. Por ejemplo, `new MiClaseAbstracta()` daría un error.
+2.  **Pueden tener métodos abstractos:** Son métodos que se declaran pero no se implementan en la clase abstracta. Las clases que hereden de ella están **obligadas** a proporcionar una implementación para estos métodos.
+3.  **Pueden tener métodos concretos:** También pueden contener métodos con una implementación completa, que las clases hijas heredan directamente.
+
+### Ejemplo práctico
+
+Imaginemos que estamos modelando figuras geométricas. Todas las figuras tienen un nombre y un método para calcular su área, pero la fórmula del área es diferente para cada una. Una clase abstracta `Figura` es perfecta para este caso.
+
+```typescript
+// Se define la clase con el keyword "abstract"
+abstract class Figura {
+  constructor(protected nombre: string) {}
+
+  // Método concreto: compartido por todas las clases hijas
+  obtenerNombre(): string {
+    return `Esta figura es un ${this.nombre}`;
+  }
+
+  // Método abstracto: debe ser implementado por las clases hijas
+  abstract calcularArea(): number;
+}
+
+// Clase que hereda de Figura
+class Circulo extends Figura {
+  constructor(private radio: number) {
+    super("círculo"); // Llama al constructor de la clase padre
+  }
+
+  // Implementación obligatoria del método abstracto
+  public calcularArea(): number {
+    return Math.PI * this.radio * this.radio;
+  }
+}
+
+// Otra clase que hereda de Figura
+class Rectangulo extends Figura {
+  constructor(private base: number, private altura: number) {
+    super("rectángulo");
+  }
+
+  // Implementación obligatoria y específica para Rectangulo
+  public calcularArea(): number {
+    return this.base * this.altura;
+  }
+}
+
+// --- Uso ---
+
+// const figura = new Figura("figura generica"); // Error: No se puede crear una instancia de una clase abstracta.
+
+const miCirculo = new Circulo(10);
+const miRectangulo = new Rectangulo(5, 4);
+
+console.log(miCirculo.obtenerNombre()); // -> "Esta figura es un círculo"
+console.log(`Área: ${miCirculo.calcularArea()}`); // -> Área: 314.159...
+
+console.log(miRectangulo.obtenerNombre()); // -> "Esta figura es un rectángulo"
+console.log(`Área: ${miRectangulo.calcularArea()}`); // -> Área: 20
+```
+
+# Static
+
+- En ``Clases normales``, los atributos `static` se definen con la palabra clave `static` y se accede a ellos mediante el nombre de la clase.
+- En ``Clases abstractas``, los atributos `static` funcionan de la misma manera, pero no se pueden instanciar directamente. Se accede a ellos a través de la clase hija que los implementa.
+
+```typescript
+abstract class Figura {
+  static pi = 3.14;
+  static areaCirculo(radio: number) {
+    return this.pi * radio * radio;
+  }
+}
+
+class Circulo extends Figura {
+  static areaCirculo(radio: number) {
+    return super.areaCirculo(radio);
+  }
+}
+console.log(Figura.pi); // -> 3.14
+console.log(Circulo.areaCirculo(10)); // -> 314
+```
