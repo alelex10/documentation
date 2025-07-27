@@ -1,0 +1,38 @@
+---
+layout: "/layout.astro"
+---
+
+# File System
+
+- link documentation https://nodejs.org/docs/latest/api/fs.html#file-system
+
+El File System es un módulo nativo que permite interactuar con el sistema de archivos del equipo. Permite leer, escribir, modificar, eliminar archivos y directorios. La mayoría de los métodos te ofrecen la versión síncrona y asíncrona.
+
+- ``Requiere:``
+    - ``utf8``: Permite leer y escribir archivos con codificación UTF-8.
+        - si no se especifica, los archivos serán leidos como binarios.
+    - importar el módulo: ``const fs = require('fs');``
+        - ``import fs from 'fs:node';``
+## Ejemplos
+
+### Asíncrona
+
+```javascript
+import fs from 'fs:node';
+
+const fs = require('fs');
+fs.readFile('archivo.txt', 'utf8', (err, data) => {
+  if (err) throw err;
+  console.log(data);
+});
+```
+
+### Síncrona
+
+```javascript
+import fs from 'fs:node';
+
+const fs = require('fs');
+const data = fs.readFileSync('archivo.txt', 'utf8');
+console.log(data);
+```
