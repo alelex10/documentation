@@ -1,0 +1,26 @@
+---
+layout: "/layout.astro"
+---
+
+# this
+
+- 
+```javascript
+const cat: Cat = {
+  name: "Haru",
+  makeSound: () => {
+    console.log("miau");
+    // En una función flecha, this no se refiere al objeto cat, sino al contexto global
+    console.log(this);
+  },
+  walk: function () {
+    console.log("caminar");
+    // En una función tradicional, this se refiere al objeto cat
+    console.log(this);
+  },
+};
+
+cat.walk();
+
+console.log(globalThis);
+```
