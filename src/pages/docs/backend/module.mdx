@@ -1,0 +1,39 @@
+---
+layout: "/layout.astro"
+---
+
+# Módulo de Backend
+
+    En el desarrollo backend, un **módulo** es una forma de organizar el código en partes más pequeñas, independientes y reutilizables. Cada módulo tiene una responsabilidad única y encapsula su propia lógica.
+
+Piensa en ellos como si fueran **bloques de LEGO**. En lugar de construir una enorme y compleja estructura de una sola pieza (lo que sería un caos), la construyes ensamblando bloques más pequeños y especializados. Cada bloque (módulo) tiene una función específica y se puede conectar con otros de manera ordenada.
+
+### ¿Qué hacen y para qué sirven?
+
+Los módulos son la base para crear un software limpio y mantenible. Sus funciones principales son:
+
+1.  **Organización y Estructura:** Mantienen el código ordenado en lugar de tener un único archivo gigante. Agrupan el código relacionado (por ejemplo, todo lo que gestiona usuarios va en un "módulo de usuarios").
+
+2.  **Reutilización:** Un módulo bien diseñado se puede usar en diferentes partes de una aplicación o incluso en proyectos completamente distintos. Por ejemplo, un módulo para enviar correos electrónicos se puede reutilizar una y otra vez.
+
+3.  **Encapsulamiento (Separación de Intereses):** Cada módulo se encarga de una sola cosa. El módulo de pagos no necesita saber cómo funciona el módulo de notificaciones, solo necesita saber cómo invocarlo. Esto evita que un cambio en una parte del sistema rompa otra de forma inesperada.
+
+4.  **Mantenibilidad:** Es mucho más fácil encontrar y corregir un error (bug) o actualizar una funcionalidad si está aislada dentro de un módulo. No tienes que leer miles de líneas de código para encontrar el problema.
+
+5.  **Escalabilidad:** Permiten que la aplicación crezca de forma ordenada. Añadir una nueva funcionalidad grande (como un sistema de chat) se convierte en "crear un nuevo módulo" en lugar de modificar un sistema monolítico y frágil.
+
+6.  **Colaboración:** Facilitan el trabajo en equipo. Diferentes desarrolladores o equipos pueden trabajar en módulos distintos de forma simultánea sin interferir unos con otros.
+
+### Ejemplo Práctico
+
+Imagina que estás construyendo el backend de una **tienda online**. Podrías tener módulos como:
+
+*   **Módulo de Autenticación:** Se encarga de todo lo relacionado con el registro de usuarios, inicio de sesión (login) y gestión de contraseñas.
+*   **Módulo de Productos:** Su única responsabilidad es crear, leer, actualizar y eliminar productos del catálogo.
+*   **Módulo de Carrito de Compras:** Gestiona los productos que un usuario agrega a su carrito.
+*   **Módulo de Pagos:** Se integra con pasarelas de pago como Stripe o PayPal para procesar las transacciones.
+*   **Módulo de Notificaciones:** Envía correos electrónicos (confirmación de compra, restablecimiento de contraseña, etc.).
+
+El término exacto puede variar según el lenguaje de programación (por ejemplo, se les llama *packages* en Java, *módulos* o *paquetes* en Python, *módulos* o *librerías* en Node.js), pero el concepto de dividir para vencer es el mismo.
+
+En resumen, **los módulos son la columna vertebral de una arquitectura de software backend limpia, escalable y fácil de mantener.**
