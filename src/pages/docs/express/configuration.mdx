@@ -1,0 +1,15 @@
+---
+layout: "/layout.astro"
+---
+
+# Prefijo de path de las rutas
+
+En el archivo `src/main.ts`, puedes definir un prefijo para todas las rutas de tu aplicación. Esto es útil si quieres que todas tus rutas tengan un prefijo común, como `/api`.
+
+```typescript
+import express from 'express';
+
+const app = express();
+const port = 3000;
+app.use('/api', express.json()); // Aquí se define el prefijo '/api'
+```
