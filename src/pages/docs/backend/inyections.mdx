@@ -1,0 +1,41 @@
+---
+layout: "/layout.astro"
+---
+
+# Inyecciones de dependencias
+
+- Al instanciar la nueva clase dentro de Coche estaria creando una clase nueva motor para cada coche
+- Una inyeccion de dependencias es una manera de resolver este problema
+
+``sin inyeccion de dependencias``
+```ts
+class Motor {
+	arrancar() {
+		console.log("Motor arrancado");
+	}
+}
+class Coche {
+	motor: new Motor();
+	constructor(motor: Motor) {
+		this.motor = motor;
+	}
+}
+```
+``con inyeccion de dependencias``
+```ts
+class Motor {
+    arrancar() {
+        console.log("Motor arrancado");
+    }
+}
+class Coche {
+
+    constructor(private motor: Motor) {
+        this.motor = Motor();
+    }
+}
+
+const motor = new Motor();
+const auto = new Coche(motor);
+
+```

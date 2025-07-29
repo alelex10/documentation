@@ -1,0 +1,24 @@
+---
+layout: "/layout.astro"
+---
+
+Son funciones especiales que se aplican a clases, métodos o parámetros para modificar su comportamiento. Por ejemplo
+
+- Decoradores de clase: `@Controller()`, `@Injectable()`
+- Decoradores de método:` @Get()`, `@Post()`,` @Put()`, `@Delete()`
+- Decoradores de parámetro: `@Param()`, `@Body()`, `@Query()`
+
+```ts
+@Controller("users")
+export class UsersController {
+	@Get(":id")
+	getUser(@Param("id") id: string) {
+		return `User ID: ${id}`;
+	}
+
+	@Post()
+	createUser(@Body() createUserDto: CreateUserDto) {
+		return `User created: ${createUserDto.name}`;
+	}
+}
+```
