@@ -2,40 +2,190 @@
 layout: "/layout.astro"
 ---
 
-# Inyecciones de dependencias
+### Explicación Detallada de la Inyección de Dependencias (DI)
 
-- Al instanciar la nueva clase dentro de Coche estaria creando una clase nueva motor para cada coche
-- Una inyeccion de dependencias es una manera de resolver este problema
+Imagina que estás construyendo un coche. Tienes un componente `Motor`, un `Chasis` y unas `Ruedas`.
 
-``sin inyeccion de dependencias``
-```ts
-class Motor {
+#### El Enfoque SIN Inyección de Dependencias (Acoplamiento Fuerte)
+
+El componente `Coche` sería responsable de construir sus propias partes.
+
+```typescript
+// ESTO ES UN ANTI-PATRÓN
+class Coche {
+	private motor: Motor;
+	private chasis: Chasis;
+
+	constructor() {
+		// El coche CREA sus propias dependencias.
+		this.motor = new MotorV8(); // ¡Está atado a un motor V8!
+		this.chasis = new ChasisDeportivo(); // ¡Y a un chasis deportivo!
+	}
+
 	arrancar() {
-		console.log("Motor arrancado");
+		this.motor.encender();
 	}
 }
+```
+
+**Problemas de este enfoque:**
+
+1.  **Poca flexibilidad:** Si mañana quieres un `MotorElectrico` en lugar de un `MotorV8`, tienes que modificar la clase `Coche`. El coche está "fuertemente acoplado" a sus dependencias.
+2.  **Dificultad para las pruebas:** Si quieres probar el `Coche` sin arrancar un motor de verdad (que podría ser un proceso complejo), es muy difícil. No puedes "engañar" a la clase `Coche` para que use un `MotorDePrueba` falso.
+3.  **Reutilización complicada:** La lógica del `Coche` está mezclada con la lógica de _construcción_ de sus partes.
+
+---
+
+#### El Enfoque CON Inyección de Dependencias (Acoplamiento Débil)
+
+El principio clave detrás de la DI es la **Inversión de Control (IoC)**.
+
+- **Control Normal:** Mi clase `Coche` controla cómo se crean sus dependencias (`new MotorV8()`).
+- **Inversión de Control:** Mi clase `Coche` ya no tiene el control. Cede esa responsabilidad a una entidad externa (llamada **Contenedor de DI** o **Contenedor IoC**).
+
+Ahora, el `Coche` simplemente declara lo que necesita. No sabe (ni le importa) cómo se construye.
+
+```typescript
+// Así se hace con Inyección de Dependencias
 class Coche {
-	motor: new Motor();
-	constructor(motor: Motor) {
+	private motor: IMotor; // Depende de una abstracción (interfaz), no de una clase concreta
+	private chasis: IChasis;
+
+	// Las dependencias se "inyectan" en el constructor
+	constructor(motor: IMotor, chasis: IChasis) {
 		this.motor = motor;
+		this.chasis = chasis;
+	}
+
+	arrancar() {
+		this.motor.encender();
+	}
+}
+
+// Un "Contenedor" externo se encarga de todo:
+const motorParaHoy = new MotorElectrico();
+const chasisParaHoy = new ChasisUrbano();
+
+// El contenedor "inyecta" las dependencias al crear el coche.
+const miCoche = new Coche(motorParaHoy, chasisParaHoy);
+```
+
+**Beneficios Clave:**
+
+1.  **Máxima Flexibilidad:** El `Coche` es agnóstico al tipo de motor o chasis. Puedes pasarle cualquier implementación que cumpla con el "contrato" (la interfaz `IMotor`).
+2.  **Pruebas Sencillas (Testing):** Al probar, puedes crear un "mock" o un motor falso y pasárselo al coche.
+
+    ```typescript
+    const motorFalso = new MotorDePrueba(); // Un motor que no hace nada real
+    const chasisFalso = new ChasisDePrueba();
+    const cocheDePrueba = new Coche(motorFalso, chasisFalso);
+    // Ahora puedes probar la lógica de `cocheDePrueba.arrancar()` de forma aislada.
+    ```
+
+3.  **Código Limpio y Reutilizable:** Cada clase tiene una única responsabilidad. `Coche` se encarga de la lógica de conducción, no de la fabricación de motores.
+
+---
+
+### Ejemplo Práctico en NestJS
+
+NestJS lleva este concepto al siguiente nivel y lo automatiza casi por completo usando **decoradores y Metadatos**. El "Contenedor de DI" de NestJS gestiona todo por nosotros.
+
+Veamos un escenario clásico: Un `Controller` que necesita un `Service` para obtener datos.
+
+#### Paso 1: Crear el Proveedor de Dependencias (`UsersService`)
+
+Este es el servicio que será "inyectado". Para que NestJS sepa que esta clase puede ser una dependencia, la marcamos con el decorador `@Injectable()`.
+
+```typescript src/users/users.service.ts
+import { Injectable } from "@nestjs/common";
+
+// Interfaz para definir la forma de un Usuario
+export interface User {
+	id: number;
+	name: string;
+	email: string;
+}
+
+@Injectable() // <-- ¡Clave! Marca esta clase para que el Contenedor de DI de Nest la pueda gestionar.
+export class UsersService {
+	// En un caso real, esto se conectaría a una base de datos.
+	private readonly users: User[] = [
+		{ id: 1, name: "John Doe", email: "john.doe@example.com" },
+		{ id: 2, name: "Jane Smith", email: "jane.smith@example.com" },
+	];
+
+	findOne(id: number): User | null {
+		return this.users.find((user) => user.id === id) || null;
+	}
+
+	findAll(): User[] {
+		return this.users;
 	}
 }
 ```
-``con inyeccion de dependencias``
-```ts
-class Motor {
-    arrancar() {
-        console.log("Motor arrancado");
-    }
+
+#### Paso 2: Crear el Consumidor de la Dependencia (`UsersController`)
+
+Este es el controlador que _necesita_ el `UsersService`. La inyección ocurre en el `constructor`.
+
+```typescript src/users/users.controller.ts
+import { Controller, Get, Param, ParseIntPipe } from "@nestjs/common";
+import { UsersService } from "./users.service";
+import { User } from "./users.service";
+
+@Controller("users") // Define la ruta base para este controlador
+export class UsersController {
+	// ¡Aquí ocurre la magia de la Inyección de Dependencias!
+	constructor(private readonly usersService: UsersService) {}
+	// ¿Qué pasa aquí?
+	// 1. NestJS ve que `UsersController` necesita una instancia de `UsersService`.
+	// 2. Busca en su contenedor si sabe cómo crear un `UsersService`.
+	// 3. Como lo marcamos con @Injectable(), sabe cómo hacerlo.
+	// 4. Crea una instancia (o reutiliza una existente, Singleton por defecto) y la pasa al constructor.
+	// `private readonly` es un atajo de TypeScript para crear y asignar la propiedad `this.usersService`.
+
+	@Get()
+	getAllUsers(): User[] {
+		// Usamos la dependencia inyectada sin saber cómo fue creada.
+		return this.usersService.findAll();
+	}
+
+	@Get(":id")
+	getUserById(@Param("id", ParseIntPipe) id: number): User {
+		return this.usersService.findOne(id);
+	}
 }
-class Coche {
-
-    constructor(private motor: Motor) {
-        this.motor = Motor();
-    }
-}
-
-const motor = new Motor();
-const auto = new Coche(motor);
-
 ```
+
+#### Paso 3: Registrar todo en un Módulo (`UsersModule`)
+
+El Contenedor de DI de NestJS está organizado por módulos. Para que el `UsersController` pueda recibir el `UsersService`, ambos deben ser registrados en el mismo contexto de módulo.
+
+```typescript src/users/users.module.ts
+import { Module } from "@nestjs/common";
+import { UsersController } from "./users.controller";
+import { UsersService } from "./users.service";
+
+@Module({
+	controllers: [UsersController], // Clases que gestionan las peticiones HTTP
+	providers: [UsersService], // ¡Clave! Aquí registramos nuestros "inyectables".
+	// Al poner UsersService aquí, le decimos al contenedor de este módulo:
+	// "Oye, si alguien te pide un UsersService, créalo y entrégaselo".
+})
+export class UsersModule {}
+```
+
+### Resumen del Flujo en NestJS
+
+1.  **Defines un servicio** (`UsersService`) y lo decoras con `@Injectable()` para que Nest lo reconozca.
+2.  **Defines un consumidor** (`UsersController`) y en su constructor, declaras el servicio que necesitas como un parámetro tipado (`constructor(private usersService: UsersService)`).
+3.  **Registras ambos** en un `@Module()`: el consumidor en `controllers` y el proveedor de la dependencia en `providers`.
+
+Cuando llega una petición a `/users/1`, NestJS:
+
+1.  Busca qué controlador gestiona esa ruta (`UsersController`).
+2.  Para crear una instancia de `UsersController`, ve que su constructor necesita `UsersService`.
+3.  Consulta el array `providers` del módulo, encuentra `UsersService`, crea una instancia (si no existe ya) y la **inyecta** en el constructor del controlador.
+4.  Finalmente, con el controlador ya construido y con sus dependencias listas, ejecuta el método `getUserById(1)`.
+
+De esta forma, `UsersController` nunca tuvo que hacer `new UsersService()`. Está completamente desacoplado, es fácil de probar (puedes inyectarle un `UsersService` falso en tus tests) y tu código queda inmensamente más limpio y mantenible.

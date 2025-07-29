@@ -1,0 +1,83 @@
+---
+layout: "/layout.astro"
+---
+
+### 1. Crear un nuevo proyecto (si aún no lo tienes)
+
+Primero, necesitas un proyecto de NestJS.
+
+```shell
+nest new nombre-del-proyecto
+```
+
+### 2. Generar un Recurso REST (La forma más rápida)
+
+Este es el comando más poderoso para crear una API REST. Generará el módulo, el controlador con los endpoints (GET, POST, PATCH, DELETE) y el servicio con la lógica de negocio.
+
+```shell
+nest generate resource
+```
+
+o su alias más corto:
+
+```shell
+nest g resource
+```
+
+La CLI te hará algunas preguntas:
+1.  **"What name would you like to use for the resource?"**: Escribe el nombre de tu recurso (por ejemplo, `products`, `users`, `tasks`).
+2.  **"What transport layer do you use?"**: Elige **REST API**.
+3.  **"Would you like to generate CRUD entry points?"**: Responde **Yes (y)**.
+
+Esto creará una estructura de archivos como esta:
+
+```
+src/
+└── products/
+    ├── dto/
+    |   ├── create-product.dto.ts
+    |   └── update-product.dto.ts
+    ├── entities/
+    |   └── product.entity.ts
+    ├── products.controller.ts
+    ├── products.module.ts
+    └── products.service.ts
+```
+
+### 3. Generar los componentes por separado
+
+Si no quieres generar un CRUD completo y prefieres construir tu API pieza por pieza, puedes usar estos comandos:
+
+#### a. Generar un Módulo
+Para organizar tu código.
+
+```shell
+nest generate module mi-modulo
+```
+
+#### b. Generar un Controlador
+Para manejar las rutas y las peticiones HTTP.
+
+```shell
+nest generate controller mi-modulo/mi-controlador --flat
+```
+*   `--flat` evita que se cree una carpeta adicional para el controlador.
+
+#### c. Generar un Servicio
+Para encapsular la lógica de negocio.
+
+```shell
+nest generate service mi-modulo/mi-servicio --flat
+```
+
+### Resumen de Comandos
+
+| Comando (Largo) | Comando (Corto) | Descripción |
+| :--- | :--- | :--- |
+| `nest new <nombre>` | `nest n <nombre>` | Crea un nuevo proyecto. |
+| `nest generate resource` | `nest g resource` | **Recomendado:** Crea un módulo, controlador y servicio para un recurso RESTful completo. |
+| `nest generate module <nombre>` | `nest g mo <nombre>` | Genera un nuevo módulo. |
+| `nest generate controller <nombre>` | `nest g co <nombre>` | Genera un nuevo controlador. |
+| `nest generate service <nombre>` | `nest g s <nombre>` | Genera un nuevo servicio. |
+
+Para empezar, te recomiendo usar `nest g resource`, ya que te da una base sólida y funcional en segundos. ¡Espero que esto te sea de gran ayuda
