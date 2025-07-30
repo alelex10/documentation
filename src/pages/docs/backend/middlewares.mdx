@@ -1,0 +1,387 @@
+---
+layout: "/layout.astro"
+---
+
+# Middlewares
+
+## Características
+
+- Son funciones que se ejecutan **antes** de que una solicitud llegue al controlador.
+- Pueden aplicarse a **todas las rutas** o a **rutas específicas** de un módulo o controlador.
+- Los middlewares en NestJS son similares a los de **Express.js**, ya que NestJS se basa en Express por defecto.
+- Un middleware en NestJS puede ser una función o una clase que implemente la interfaz `NestMiddleware`. Lo más común es implementarlo como una clase con un método `use()`.
+
+```typescript
+import { Injectable, NestMiddleware } from "@nestjs/common";
+import { Request, Response, NextFunction } from "express";
+
+@Injectable()
+export class LoggerMiddleware implements NestMiddleware {
+	use(req: Request, res: Response, next: NextFunction) {
+		console.log(`Request made to: ${req.url}`);
+		next(); // Es importante llamar a next() para continuar el flujo de la solicitud
+	}
+}
+```
+
+## Aplicación de Middlewares
+
+Para aplicar un middleware, se debe hacer en el **módulo**, específicamente dentro del método `configure()` de una clase que implemente la interfaz `NestModule`. Aquí es donde se especifican las rutas a las que se aplicará.
+
+```typescript
+import { Module, NestModule, MiddlewareConsumer } from "@nestjs/common";
+import { UsersController } from "./users.controller";
+import { LoggerMiddleware } from "./logger.middleware";
+
+@Module({
+	controllers: [UsersController],
+})
+export class UsersModule implements NestModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer
+			.apply(LoggerMiddleware) // Aplicamos el middleware
+			.forRoutes(UsersController); // Se aplica a todas las rutas del controlador 'users'
+
+		// Se pueden encadenar múltiples middlewares
+		consumer.apply(OtroMiddleware).forRoutes(OtherRoute);
+	}
+}
+```
+
+También es posible aplicarlo a rutas más detalladas, especificando el `path` y el método HTTP (`RequestMethod`).
+
+```typescript
+import { RequestMethod } from '@nestjs/common';
+
+//...
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: 'users/:id', method: RequestMethod.GET }); // Se aplica solo a la ruta GET /users/:id
+  }
+//...
+```
+
+## Aplicación Global
+
+Y es posible aplicarlo a modo global en el archivo `main.ts` usando el método `app.use()`.
+
+```typescript
+// main.ts
+const app = await NestFactory.create(AppModule);
+app.use(LoggerMiddleware); // El middleware se aplica a todas las rutas de la aplicación
+```
+
+### Middleware vs. Guardias, Filtros e Interceptores
+
+- **Middlewares:**
+  - Actúan en todas las solicitudes (generalmente a nivel de servidor o módulo) antes de llegar a los controladores.
+- **Guardias (Guards):**
+  - Se usan para aplicar reglas de autorización, permitiendo o denegando el acceso a una ruta específica.
+- **Filtros de Excepciones (Exception Filters):**
+  - Gestionan los errores o excepciones que se producen durante el manejo de una solicitud.
+- **Interceptores:**
+  - Modifican las solicitudes o respuestas antes o después de ser procesadas por el controlador, pueden transformar la respuesta o medir tiempos de ejecución.
+
+Claro, aquí tienes el contenido en formato Markdown con las palabras clave resaltadas.
+
+---
+
+# Pipes y validaciones en NestJS
+
+Los **`Pipes`** son mecanismos que permiten **transformar** y **validar** los datos de entrada antes de que lleguen a los controladores.
+Te aseguran que los datos que recibe tu aplicación sean correctos, estén bien formateados, y cumplan con ciertas reglas antes de ser procesados.
+
+Es una clase que implementa la interfaz **`PipeTransform`** y se encarga de dos tareas principales:
+
+-   **Transformación**: Convierte los datos de entrada en el formato deseado antes de que lleguen al controlador. Por ejemplo, puedes transformar una cadena en un número.
+-   **Validación**: Valida los datos de entrada y, si no son válidos, lanza una excepción que NestJS puede capturar y manejar.
+
+```typescript
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+
+@Injectable()
+export class ParseIntPipe implements PipeTransform {
+  transform(value: string, metadata: ArgumentMetadata) {
+    const val = parseInt(value, 10);
+    if (isNaN(val)) {
+      throw new BadRequestException('Validation failed: Value is not a number');
+    }
+    return val;
+  }
+}
+```
+
+Para aplicar los pipes tenemos 3 formas:
+
+-   **A nivel de parámetro**: Se aplica a un parámetro específico de un controlador.
+    ```typescript
+    @Get(':id')
+    getUser(@Param('id', ParseIntPipe) id: number) {
+      return `User ID is ${id}`;
+    }
+    ```
+-   **A nivel de método**: Se aplica a todos los parámetros del método de un controlador.
+    ```typescript
+    @Post()
+    @UsePipes(new ValidationPipe())
+    createUser(@Body() createUserDto: CreateUserDto) {
+      // Crea un nuevo usuario
+    }
+    ```
+-   **A nivel global**: Se aplica a toda la aplicación para que todas las solicitudes pasen por el pipe.
+    ```typescript
+    const app = await NestFactory.create(AppModule);
+    app.useGlobalPipes(new ValidationPipe());
+    ```
+
+También viene con algunos **`pipes integrados`** que se pueden usar directamente:
+
+-   **`ValidationPipe`**: Valida los datos basados en **clases DTO** y decoradores de validación.
+-   **`ParseIntPipe`**: Convierte los parámetros de la solicitud a enteros.
+-   **`ParseBoolPipe`**: Convierte valores a booleanos.
+-   **`ParseArrayPipe`**: Convierte cadenas separadas por comas a arrays.
+
+# Guards
+
+Se utiliza principalmente para verificar si una solicitud tiene los permisos o condiciones necesarias para continuar. Su función principal es decidir si una solicitud entrante debe ser manejada por el controlador o no, lo que los convierte en una pieza clave para la **autenticación** y **autorización**.
+
+Implementan la interfaz **`CanActivate`**. Esta interfaz define un único método **`canActivate()`**, que debe devolver un valor booleano o una promesa que resuelva un booleano. Si el guard devuelve `true`, la solicitud puede continuar hacia el controlador; si devuelve `false`, la solicitud es bloqueada.
+
+```typescript
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Observable } from 'rxjs';
+
+@Injectable()
+export class AuthGuard implements CanActivate {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const user = request.user; // Imagina que el usuario ya fue autenticado
+    return !!user; // Si hay un usuario autenticado, continúa la solicitud
+  }
+}
+```
+
+Pueden ser aplicados a controladores o métodos específicos usando **`@UseGuards()`**:
+
+```typescript
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from './auth.guard';
+
+@Controller('users')
+export class UsersController {
+  @Get()
+  @UseGuards(AuthGuard) // Aplica el AuthGuard a este método
+  getUsers() {
+    return 'This route is protected by a guard';
+  }
+}
+```
+
+Y también pueden ser aplicados a **nivel global**:
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { AuthGuard } from './auth.guard';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalGuards(new AuthGuard()); // Aplica el guard globalmente
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+# Interceptors
+
+Se utiliza para **modificar o manipular el flujo de las solicitudes o respuestas**, ya sea antes o después de que el controlador maneje la solicitud.
+Son útiles para tareas como la **transformación de respuestas**, el **manejo de excepciones**, el **registro de tiempos de ejecución**.
+
+Es una clase que implementa la interfaz **`NestInterceptor`** y contiene un método **`intercept()`**. Este método recibe dos parámetros: el contexto de ejecución (`ExecutionContext`) y el **`CallHandler`**, que es una referencia al siguiente paso en el pipeline (normalmente el controlador).
+
+El **`intercept()`** puede modificar la solicitud antes de que llegue al controlador, o puede interceptar la respuesta para modificarla antes de que se envíe de vuelta al cliente.
+
+```typescript
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+@Injectable()
+export class LoggingInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    console.log('Before...');
+    const now = Date.now();
+    return next
+      .handle()
+      .pipe(
+        tap(() => console.log(`After... ${Date.now() - now}ms`))
+      );
+  }
+}
+```
+
+Puede ser aplicado a nivel de controlador o método mediante **`@UseInterceptors()`**:
+
+```typescript
+import { Controller, Get, UseInterceptors } from '@nestjs/common';
+import { LoggingInterceptor } from './logging.interceptor';
+
+@Controller('users')
+export class UsersController {
+  @Get()
+  @UseInterceptors(LoggingInterceptor) // Aplica el interceptor
+  getUsers() {
+    return 'This route is intercepted';
+  }
+}
+```
+
+O a **nivel global** de forma similar a los guards:
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { LoggingInterceptor } from './logging.interceptor';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalInterceptors(new LoggingInterceptor()); // Interceptor global
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+## Casos comunes de uso de Interceptores:
+
+-   **Transformación de respuestas**: Modificar la estructura de la respuesta antes de enviarla al cliente.
+-   **Manejo de excepciones**: Capturar y modificar las excepciones antes de que se devuelvan como respuestas.
+-   **Registro de tiempos de ejecución**: Medir el tiempo que toma una operación.
+-   **Cacheo de respuestas**: Implementar un mecanismo de cacheo para evitar llamadas repetitivas.
+
+En el siguiente ejemplo agrega un mensaje adicional a la respuesta original:
+
+```typescript
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+@Injectable()
+export class TransformInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    return next
+      .handle()
+      .pipe(
+        map(data => ({ data, message: 'Operation successful' })) // Agrega un mensaje a la respuesta
+      );
+  }
+}
+```
+
+# Filtros de Excepciones
+
+Sirven para **capturar y manejar los errores** que ocurren durante la ejecución de una solicitud. Su objetivo principal es capturar las excepciones lanzadas y devolver respuestas controladas y personalizadas.
+
+Implementa la interfaz **`ExceptionFilter`**. NestJS proporciona un filtro de excepciones global por defecto, pero puedes definir los tuyos.
+
+Un filtro de excepciones tiene que implementar el método **`catch()`**, que recibe dos parámetros:
+-   La **excepción** lanzada.
+-   El **contexto de ejecución** (`ExecutionContext`).
+
+```typescript
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
+import { Request, Response } from 'express';
+
+@Catch(HttpException) // Este filtro solo atrapará excepciones de tipo HttpException
+export class HttpExceptionFilter implements ExceptionFilter {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+    const status = exception.getStatus();
+
+    response
+      .status(status)
+      .json({
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        message: exception.message || 'Error ocurrido',
+      });
+  }
+}
+```
+
+Se pueden aplicar a nivel controlador o método con **`@UseFilters()`** y también a **nivel global**:
+
+```typescript
+import { Controller, Get, UseFilters } from '@nestjs/common';
+import { HttpExceptionFilter } from './http-exception.filter';
+
+@Controller('users')
+export class UsersController {
+  @Get()
+  @UseFilters(HttpExceptionFilter)
+  getUsers() {
+    throw new HttpException('Forbidden', 403); // Lanza una excepción
+  }
+}
+```
+
+```typescript
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './http-exception.filter';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalFilters(new HttpExceptionFilter()); // Filtro global para toda la app
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+Con el decorador **`@Catch()`** elijo qué excepciones capturar:
+
+```typescript
+@Catch(HttpException, AnotherException)
+export class MultipleExceptionsFilter implements ExceptionFilter {
+  catch(exception: HttpException | AnotherException, host: ArgumentsHost) {
+    // Lógica para manejar ambas excepciones
+  }
+}
+```
+
+Algunas de las excepciones predefinidas más comunes son:
+
+-   **`BadRequestException` (400)**: Solicitud inválida.
+-   **`UnauthorizedException` (401)**: Falta autenticación.
+-   **`ForbiddenException` (403)**: Sin permisos para acceder.
+-   **`NotFoundException` (404)**: Recurso no encontrado.
+-   **`InternalServerErrorException` (500)**: Errores internos del servidor.
+
+## Ejemplo de filtro global para todas las excepciones
+
+```typescript
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : 500;
+
+    response
+      .status(status)
+      .json({
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        message: (exception as any).message || 'Internal server error',
+      });
+  }
+}
+```

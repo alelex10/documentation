@@ -1,0 +1,7 @@
+name: traslate
+version: 0.0.1
+schema: v1
+prompts:
+  - name: traslateMdx
+    description: traslate prompt to mdx
+    prompt: pasamelo a md y resaltame las palabras clave
