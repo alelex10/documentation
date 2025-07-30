@@ -1,0 +1,79 @@
+---
+layout: "/layout.astro"
+---
+
+# Como visualizar los gráficos de Mermaid en Astro
+## Links
+- [Documentación de Mermaid de integración](https://mermaid.js.org/intro/getting-started.html)
+- [link del blog tutorial de integración a Astro](https://agramont.net/blog/diagraming-with-mermaidjs-astro/)
+# Añadiendo a tu sitio Astro
+
+Vamos a utilizar módulos **`rehype-mermaid`** y **`Playwright`** y no `mermaid` directamente o la CLI de `mermaid`.
+
+-   **`rehype-mermaid`**
+-   **`Playwright`**
+
+> 💡
+> **`Playwright`** es un marco para pruebas y automatización web. Lo estamos usando aquí para **renderizar los diagramas del lado del servidor**. Este es un requisito para el complemento **`rehype-mermaid`**.
+> Es un tema más amplio, en el que no entraré en detalles aquí, pero prácticamente salva el día cuando se trata de renderizar los diagramas del lado del servidor.
+
+Para agregar **`MermaidJS`** y **`Expressive Code`** a su sitio **`Astro`**, deberá instalar los siguientes paquetes en la raíz de su proyecto Astro:
+
+### Cómo agregar código expresivo, MermaidJS y Playwright a tu sitio Astro
+
+```sh
+npx astro add astro-expressive-code
+npm install remark-mermaidjs
+npx playwright install --with-deps chromium
+npm install -D playwright
+```
+
+Después de instalar **`Playwright`**, es posible que vea un mensaje de advertencia de Playwright. Esto se debe a que **`Playwright`** se instala antes que las dependencias del proyecto.
+
+No hice nada más después de esto y todo salió bien.
+
+> #### Mensaje de advertencia del dramaturgo
+>
+> ```text
+> ╔═══════════════════════════════════════════════════════════════════════════════╗
+> ║ WARNING: It looks like you are running 'npx playwright install' without first ║
+> ║ installing your project's dependencies. ║
+> ║ ║
+> ║ To avoid unexpected behavior, please install your dependencies first, and ║
+> ║ then run Playwright's install command: ║
+> ║ ║
+> ║ npm install ║
+> ║ npx playwright install ║
+> ║ ║
+> ║ If your project does not yet depend on Playwright, first install the ║
+> ║ applicable npm package (most commonly @playwright/test), and ║
+> ║ then run Playwright's install command to download the browsers: ║
+> ║ ║
+> ║ npm install @playwright/test ║
+> ║ npx playwright install ║
+> ║ ║
+> ╚═══════════════════════════════════════════════════════════════════════════════╝
+> ```
+
+Si tenía integración con **`MDX`** antes o la está agregando ahora, es posible que deba ajustar el orden de los complementos en su archivo **`astro.config.mjs`**. El orden de los complementos es importante, ya que se ejecutan en el orden en que aparecen enumerados en el archivo. El complemento **`mdx`** debe aparecer antes del complemento **`astro-expressive-code`**, ya que el complemento **`mdx`** es responsable de analizar el contenido **`MDX`** y convertirlo a HTML, que luego el complemento **`astro-expressive-code`** procesa para agregar resaltado de sintaxis.
+
+Si no está utilizando **`MDX`**, puede ignorar dónde lo agregamos y configurarlo a continuación.
+
+### Astro.config.mjs básico
+
+```javascript
+import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
+import expressiveCode from "astro-expressive-code";
+import remarkMermaid from 'remark-mermaidjs'
+
+// https://astro.build/config
+export default defineConfig({
+  site: 'https://example.com',
+  markdown: {
+    // Applied to .md and .mdx files
+    remarkPlugins: [remarkMermaid],
+  },
+  integrations: [expressiveCode(), mdx()
+});
+```

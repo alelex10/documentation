@@ -12,6 +12,11 @@
     "@astrojs/mdx": "^4.3.0",
     "@tailwindcss/vite": "^4.1.6",
     "astro": "^5.7.13",
+    "astro-expressive-code": "^0.41.3",
+    "remark-mermaidjs": "^7.0.0",
     "tailwindcss": "^4.1.6"
+  },
+  "devDependencies": {
+    "playwright": "^1.54.1"
   }
 }
