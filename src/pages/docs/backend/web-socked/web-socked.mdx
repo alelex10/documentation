@@ -12,30 +12,33 @@ Esta tecnología es particularmente útil en aplicaciones modernas que demandan 
 
 ### ✨ Características principales
 
-*   **`Fallback automático`**: Si **`WebSockets`** no está disponible (por ejemplo, en redes corporativas con firewalls restrictivos), **`Socket.IO`** utiliza otros transportes como **`HTTP long-polling`** para garantizar la conectividad.
-*   **`Reconexión automática`**: Si se pierde la conexión, **`Socket.IO`** intenta reconectar al cliente de forma automática, lo que mejora la resiliencia.
-*   **`Salas (Rooms)`**: Permite agrupar clientes en “salas” para enviar mensajes a subconjuntos específicos.
-*   **`Middlewares`**: Se pueden definir funciones intermedias para procesar o validar datos antes de ejecutar la lógica principal (ideal para autenticación o logging).
-*   **`Eventos personalizados`**: Permite definir eventos semánticos específicos para cada acción, facilitando la organización del código y su mantenimiento.
+- `socket`: el socket sera cada conexión individual entre el cliente y el servidor.
+- **`Fallback automático`**: Si **`WebSockets`** no está disponible (por ejemplo, en redes corporativas con firewalls restrictivos), **`Socket.IO`** utiliza otros transportes como **`HTTP long-polling`** para garantizar la conectividad.
+- **`Reconexión automática`**: Si se pierde la conexión, **`Socket.IO`** intenta reconectar al cliente de forma automática, lo que mejora la resiliencia.
+- **`Salas (Rooms)`**: Permite agrupar clientes en “salas” para enviar mensajes a subconjuntos específicos.
+- **`Middlewares`**: Se pueden definir funciones intermedias para procesar o validar datos antes de ejecutar la lógica principal (ideal para autenticación o logging).
+- **`Eventos personalizados`**: Permite definir eventos semánticos específicos para cada acción, facilitando la organización del código y su mantenimiento.
 
 ### 🆚 Socket.IO vs WebSockets nativos
 
 **`WebSocket` nativo**
+
 ```javascript
-const ws = new WebSocket('ws://localhost:3000');
+const ws = new WebSocket("ws://localhost:3000");
 ws.onmessage = (event) => {
-  console.log('Mensaje recibido:', event.data);
+  console.log("Mensaje recibido:", event.data);
 };
-ws.send('Hola servidor');
+ws.send("Hola servidor");
 ```
 
 **`Socket.IO`**
+
 ```javascript
-const socket = io('http://localhost:3000');
-socket.on('mensaje_personalizado', (data) => {
-  console.log('Mensaje recibido:', data);
+const socket = io("http://localhost:3000");
+socket.on("mensaje_personalizado", (data) => {
+  console.log("Mensaje recibido:", data);
 });
-socket.emit('enviar_mensaje', { texto: 'Hola servidor' });
+socket.emit("enviar_mensaje", { texto: "Hola servidor" });
 ```
 
 Como se puede observar, **`Socket.IO`** provee una interfaz más intuitiva y robusta que incluye nombres de eventos, soporte para reconexión, y mecanismos de agrupamiento que **`WebSockets`** por sí solos no proporcionan.
@@ -43,16 +46,18 @@ Como se puede observar, **`Socket.IO`** provee una interfaz más intuitiva y rob
 ### 🚀 Configuración inicial en NestJS
 
 #### 📦 Instalación de dependencias
+
 ```shell
 pnpm add @nestjs/websockets @nestjs/platform-socket.io socket.io
 pnpm add -D @types/socket.io
 ```
 
 #### ⚙️ Configuración básica del módulo
+
 ```typescript src/app.module.ts
 // app.module.ts
-import { Module } from '@nestjs/common';
-import { ChatGateway } from './chat/chat.gateway';
+import { Module } from "@nestjs/common";
+import { ChatGateway } from "./chat/chat.gateway";
 
 @Module({
   providers: [ChatGateway],
@@ -61,14 +66,17 @@ export class AppModule {}
 ```
 
 ### 🌟 Gateways en NestJS
+
 Los **`Gateways`** son clases que manejan las conexiones **`WebSocket`** en NestJS. Son similares a los controladores pero para comunicación en tiempo real.
 
 #### Generar Gateway con CLI
+
 ```shell
 nest generate gateway name-del-gateway
 ```
 
 #### 📇 Estructura básica de un Gateway
+
 ```typescript src/chat/chat.gateway.ts
 // chat.gateway.ts
 import {
@@ -78,20 +86,22 @@ import {
   OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
-} from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+} from "@nestjs/websockets";
+import { Server, Socket } from "socket.io";
 
 @WebSocketGateway({
   cors: {
-    origin: '*', // En producción, especifica dominios específicos
+    origin: "*", // En producción, especifica dominios específicos
   },
 })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
   afterInit(server: Server) {
-    console.log('Gateway inicializado');
+    console.log("Gateway inicializado");
   }
 
   handleConnection(client: Socket) {
@@ -102,37 +112,39 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log(`Cliente desconectado: ${client.id}`);
   }
 
-  @SubscribeMessage('message')
+  @SubscribeMessage("message")
   handleMessage(client: Socket, payload: any): string {
-    return 'Mensaje recibido en el servidor';
+    return "Mensaje recibido en el servidor";
   }
 }
 ```
 
 #### 🔧 Decoradores principales
 
-*   **`@WebSocketGateway(options?)`**: Marca una clase como **`Gateway`** y permite configurar opciones:
-    ```typescript
-    @WebSocketGateway({
-      port: 3001,
-      namespace: '/chat',
-      cors: {
-        origin: ['http://localhost:3000', 'https://miapp.com'],
-        credentials: true,
-      },
-    })
-    ```
+- **`@WebSocketGateway(options?)`**: Marca una clase como **`Gateway`** y permite configurar opciones:
 
-*   **`@WebSocketServer()`**: Inyecta la instancia del servidor **`Socket.IO`**:
-    ```typescript
-    @WebSocketServer()
-    server: Server;
-    ```
+  ```typescript
+  @WebSocketGateway({
+    port: 3001,
+    namespace: '/chat',
+    cors: {
+      origin: ['http://localhost:3000', 'https://miapp.com'],
+      credentials: true,
+    },
+  })
+  ```
 
-*   **`@SubscribeMessage('evento')`**: Define manejadores para eventos específicos:
-    ```typescript
-    @SubscribeMessage('chat_message')
-    handleChatMessage(client: Socket, data: { message: string; user: string }) {
-      return { status: 'success', timestamp: new Date() };
-    }
-    ```
+- **`@WebSocketServer()`**: Inyecta la instancia del servidor **`Socket.IO`**:
+
+  ```typescript
+  @WebSocketServer()
+  server: Server;
+  ```
+
+- **`@SubscribeMessage('evento')`**: Define manejadores para eventos específicos:
+  ```typescript
+  @SubscribeMessage('chat_message')
+  handleChatMessage(client: Socket, data: { message: string; user: string }) {
+    return { status: 'success', timestamp: new Date() };
+  }
+  ```
