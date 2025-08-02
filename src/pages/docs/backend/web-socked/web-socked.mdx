@@ -77,6 +77,12 @@ nest generate gateway name-del-gateway
 
 #### 📇 Estructura básica de un Gateway
 
+- **`@WebSocketServer()`**: Inyecta la instancia del servidor **`Socket.IO`**.
+- **`@SubscribeMessage('evento')`**: Define un manejador para un evento específico. Este decorador se aplica a un método dentro de tu `Gateway`. Cuando un cliente envía un mensaje con el nombre de evento 'evento', el método decorado se ejecutará automáticamente, recibiendo los datos enviados por el cliente como argumento. La función puede retornar un objeto `WsResponse`, que se utiliza para enviar una respuesta de vuelta al cliente que originó el mensaje.
+- **`handleConnection(client)`**: Método que se ejecuta cuando un cliente se conecta.
+- **`handleDisconnect(client)`**: Método que se ejecuta cuando un cliente se desconecta.
+- **`handleMessage(client, data)`**: Método que se ejecuta cuando un cliente envia un mensaje.
+
 ```typescript src/chat/chat.gateway.ts
 // chat.gateway.ts
 import {
