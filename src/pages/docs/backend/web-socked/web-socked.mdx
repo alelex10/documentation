@@ -154,3 +154,57 @@ export class ChatGateway
     return { status: 'success', timestamp: new Date() };
   }
   ```
+  ### 🌐 Cliente JavaScript (ejemplo)
+- ¿Por que usa ``http`` antes de ``ws``?
+  - Porque **`Socket.IO`** maneja automáticamente la reconexión y el fallback a otros transportes si **`WebSockets`** no está disponible.
+- para poder usar sockedio desde el cliente, debes incluir la librería de **`Socket.IO`** en tu proyecto. Puedes hacerlo a través de un [CDN](https://socket.io/docs/v4/client-installation/#from-a-cdn) o [instalándola con npm](https://socket.io/docs/v4/client-installation/#from-npm).
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat WebSocket</title>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+```
+
+```javascript
+// conectarse al servidor
+const socket = io('http://localhost:3000');
+
+// Unirse a una sala
+socket.emit('join_room', {
+  username: 'Santiago',
+  room: 'general'
+});
+
+// Enviar mensaje
+function sendMessage() {
+  const message = document.getElementById('messageInput').value;
+  socket.emit('send_message', { message });
+  document.getElementById('messageInput').value = '';
+}
+
+// Escuchar nuevos mensajes
+socket.on('new_message', (data) => {
+  const messagesDiv = document.getElementById('messages');
+  messagesDiv.innerHTML += `
+      <div>
+          <strong>${data.user}:</strong> ${data.message}
+          <small>(${new Date(data.timestamp).toLocaleTimeString()})</small>
+      </div>
+  `;
+});
+
+// Escuchar usuarios que se conectan
+socket.on('user_joined', (data) => {
+  console.log(data.message);
+});
+
+// Escuchar errores
+socket.on('error', (data) => {
+  console.error('Error:', data.message);
+});
+```

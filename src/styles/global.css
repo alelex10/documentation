@@ -148,7 +148,8 @@ th {
 }
 a {
 	color: var(--color-text-link);
-	text-decoration: none;
+	text-decoration: underline;
+
 }
 
 /** Estilos responsivos para móviles */
