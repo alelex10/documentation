@@ -2,6 +2,258 @@
 layout: "/layout.astro"
 ---
 
-# SQL
+# SQL: Comandos
 
+## DDL: `CREATE DATABASE`
 
+```sql
+CREATE DATABASE <nombre_base_de_datos>;
+```
+
+```sql
+CREATE DATABASE books_database_fs;
+```
+
+## DDL: `CREATE TABLE`
+
+```sql
+CREATE TABLE <nombre_de_tabla> (
+    <nombre_de_campo> <tipo_de_dato> <restricciones>,
+    <nombre_de_campo> <tipo_de_dato> <restricciones>,
+    <nombre_de_campo> <tipo_de_dato> <restricciones>,
+    ...
+    <nombre_de_campo> <tipo_de_dato> <restricciones>
+);
+```
+
+#### Tipo de datos PostgreSQL
+
+#### Tipo de restricciones PostgreSQL
+
+- `PRIMARY KEY`: clave primaria
+- `FOREIGN KEY`: clave foránea
+- `UNIQUE`: valor único
+- `NOT NULL`: el valor tiene prohibido ser nulo
+- `CHECK`: restricción de verificación
+- `DEFAULT`: valor por defecto
+
+#### Ejemplo
+
+```sql
+CREATE TABLE books (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(50) NOT NULL,
+    author VARCHAR(50) NOT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## DML: `INSERT INTO`
+
+```sql
+INSERT INTO <nombre_de_tabla> (
+    <nombre_de_campo>,
+    <nombre_de_campo>,
+    <nombre_de_campo>,
+    ...
+) VALUES (
+    <valor>,
+    <valor>,
+    <valor>,
+    ...
+);
+```
+
+```sql
+INSERT INTO books (
+    title,
+    author
+) VALUES (
+    'Manuelita',
+    'Creador de Manuelita'
+);
+```
+
+## DQL: `SELECT`
+
+```sql
+SELECT <nombre_de_campo>, ... FROM <nombre_de_tabla>;
+```
+
+```sql
+SELECT author, title FROM books;
+```
+
+#### Filtrando un `SELECT`
+
+```sql
+SELECT <columnas> FROM <tabla> WHERE <condición>;
+```
+
+```sql
+SELECT author FROM books WHERE title = 'Manuelita';
+```
+
+#### Renombrar una columna en un `SELECT`
+
+```sql
+SELECT <columnas> AS <alias> FROM <tabla> WHERE <condición>;
+```
+
+```sql
+SELECT author as autor_real FROM books WHERE title = 'Manuelita';
+```
+
+## DML: `UPDATE`
+
+```sql
+UPDATE <tabla>
+SET <columna> = <valor>
+WHERE <condición>;
+```
+
+```sql
+UPDATE books
+SET title = 'Manuelita set'
+WHERE author = 'Creador de Manuelita';
+```
+
+## DML: `DELETE`
+
+```sql
+DELETE FROM <tabla>
+WHERE <condición>;
+```
+
+```sql
+DELETE FROM books
+WHERE author = 'Creador de Manuelita';
+```
+
+## DDL: `ALTER TABLE`
+
+```sql
+ALTER TABLE <tabla> ADD COLUMN <columna> <tipo de dato>;
+```
+
+```sql
+ALTER TABLE books ADD COLUMN year INTEGER;
+```
+
+## DDL: `DROP TABLE`
+
+```sql
+DROP TABLE <tabla>;
+```
+
+```sql
+DROP TABLE books;
+```
+
+# Trasacciones SQL
+
+- se cumplen todas las operaciones o ninguna
+- se deshacen si alguna falla
+
+En bases de datos, una transacción es una secuencia de operaciones que se realizan como una sola unidad lógica de trabajo. Esto significa que todas las operaciones en una transacción deben completarse con éxito para que los cambios se guarden en la base de datos. Si alguna operación falla, toda la transacción se deshace y la base de datos vuelve a su estado original.
+
+## Ejemplo
+
+Un ejemplo común es una transferencia bancaria:
+
+Imagina que tienes una cuenta A con $100 y quieres transferir $30 a una cuenta B. Una transacción típica involucraría:
+
+1.  **Restar** $30 de la cuenta A.
+2.  **Sumar** $30 a la cuenta B.
+
+Si el sistema falla después del paso 1, la cuenta A tendría $70 y la cuenta B tendría $0. Para evitar esto, la transferencia se realiza como una transacción.
+
+- **Atomicidad:** Ambos pasos (restar de A y sumar a B) se realizan o ninguno. Si hay un fallo después de restar de A, la transacción se revierte y A vuelve a tener $100.
+- **Consistencia:** La suma de los saldos de A y B debe ser constante antes y después de la transacción.
+- **Aislamiento:** Si otra transacción está ocurriendo al mismo tiempo (por ejemplo, otra transferencia que involucre la cuenta A), las transacciones no deben interferir entre sí.
+- **Durabilidad:** Una vez que la transacción se completa y se confirman los cambios, los saldos actualizados de las cuentas A y B se guardan permanentemente.
+
+# Docker
+
+```yaml
+services:
+  db:
+    container_name: postgres_database
+    image: postgres:15.1
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=123456
+
+  pgadmin:
+    depends_on:
+      - db
+    image: dpage/pgadmin4:6.17
+    user: "${UID}:${GID}"
+    ports:
+      - 8080:80
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=superman@google.com
+      - PGADMIN_DEFAULT_PASSWORD=123456
+```
+### **Servicio `db` (La base de datos PostgreSQL)**
+
+-   `container_name: postgres_database`
+    -   Le da un nombre fijo y legible (`postgres_database`) al contenedor. Si no se especifica, Docker le asignaría un nombre aleatorio.
+
+-   `image: postgres:15.1`
+    -   Indica qué imagen de Docker se usará para crear el contenedor. En este caso, es la imagen oficial de **PostgreSQL** en su versión **15.1**. Docker la descargará de Docker Hub si no la tienes localmente.
+
+-   `volumes:`
+    -   Define la persistencia de los datos. Los datos dentro de un contenedor son volátiles y se pierden si el contenedor se elimina. Los volúmenes solucionan esto.
+    -   `- ./postgres:/var/lib/postgresql/data`
+        -   **`./postgres`**: Es una carpeta llamada `postgres` en tu máquina local, en el mismo directorio donde está el archivo `docker-compose.yml`.
+        -   **`/var/lib/postgresql/data`**: Es la ruta *dentro del contenedor* donde PostgreSQL guarda todos los datos de la base de datos.
+        -   **El resultado**: Todos los datos que la base de datos genere se guardarán en la carpeta `./postgres` de tu computadora, sobreviviendo así a reinicios o eliminaciones del contenedor.
+
+-   `environment:`
+    -   Establece variables de entorno dentro del contenedor, que se usan para configurarlo.
+    -   `- POSTGRES_PASSWORD=123456`
+        -   Esta es una variable **requerida** por la imagen de `postgres`. Establece la contraseña para el superusuario por defecto de la base de datos (que se llama `postgres`).
+        -   **Nota de seguridad**: Poner contraseñas directamente en este archivo no es seguro para entornos de producción.
+
+---
+
+### **Servicio `pgadmin` (La interfaz de administración)**
+
+Este bloque configura `pgAdmin`, una popular herramienta con interfaz web para gestionar bases de datos PostgreSQL.
+
+```yaml
+  pgadmin:
+    # ...
+```
+
+-   `depends_on: - db`
+    -   Le dice a Docker Compose que este servicio (`pgadmin`) depende del servicio `db`. Esto asegura que el contenedor de la base de datos (`db`) se inicie **antes** que el contenedor de `pgadmin`. Es lógico, ya que pgAdmin necesita que la base de datos esté activa para poder conectarse a ella.
+
+-   `image: dpage/pgadmin4:6.17`
+    -   Usa la imagen oficial de **pgAdmin 4**, en su versión **6.17**.
+
+-   `user: '${UID}:${GID}'`
+    -   Configura el usuario y grupo con el que se ejecutarán los procesos dentro del contenedor. `${UID}` y `${GID}` son variables que se toman de tu sistema anfitrión. Esto se hace comúnmente para evitar problemas de permisos con los volúmenes montados, asegurando que los archivos creados por el contenedor tengan el mismo propietario que el usuario del anfitrión.
+
+-   `ports:`
+    -   Mapea puertos entre tu máquina (anfitrión) y el contenedor para que puedas acceder al servicio desde fuera del contenedor.
+    -   `- 8080:80`
+        -   **`8080`**: Es el puerto en tu máquina local.
+        -   **`80`**: Es el puerto *dentro del contenedor* donde la aplicación pgAdmin está escuchando.
+        -   **El resultado**: Puedes acceder a la interfaz web de pgAdmin abriendo `http://localhost:8080` en tu navegador.
+
+-   `volumes:`
+    -   Al igual que con la base de datos, esto da persistencia a los datos de pgAdmin.
+    -   `- ./pgadmin:/var/lib/pgadmin`
+        -   Conecta la carpeta local `./pgadmin` con la carpeta `/var/lib/pgadmin` del contenedor. Aquí es donde pgAdmin guarda su configuración, como las conexiones a servidores que hayas guardado, tus preferencias, etc.
+
+-   `environment:`
+    -   Variables de entorno para configurar pgAdmin.
+    -   `- PGADMIN_DEFAULT_EMAIL=superman@google.com`
+        -   Establece el correo electrónico (que funciona como nombre de usuario) que usarás para iniciar sesión en la interfaz web de pgAdmin.
+    -   `- PGADMIN_DEFAULT_PASSWORD=123456`
+        -   Establece la contraseña para ese usuario.
