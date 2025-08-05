@@ -1,0 +1,64 @@
+---
+layout: "/layout.astro"
+---
+
+### **LIKE**
+
+- **LIKE**: busqueda de cadenas de caracteres
+- **ILIKE**: busqueda de cadenas de caracteres ignorando mayúsculas y minúsculas
+
+
+_Ejemplos_
+
+
+```sql
+-- 1. Búsqueda de patrones con '%' (comodín para múltiples caracteres)
+SELECT *
+FROM tabla
+WHERE columna LIKE 'patron%';  -- Busca cualquier cadena que empiece con 'patron'
+
+SELECT *
+FROM tabla
+WHERE columna LIKE '%patron%';  -- Busca cualquier cadena que contenga 'patron'
+
+SELECT *
+FROM tabla
+WHERE columna LIKE '%patron';  -- Busca cualquier cadena que termine con 'patron'
+
+-- 2. Búsqueda de patrones con '_' (comodín para un solo carácter)
+SELECT *
+FROM tabla
+WHERE columna LIKE 'patron_';  -- Busca cadenas que empiecen con 'patron' y tengan un carácter más
+
+SELECT *
+FROM tabla
+WHERE columna LIKE '_patron';  -- Busca cadenas que tengan 'patron' en el segundo carácter
+
+-- 3. Búsqueda case insensitive (depende del SQL dialecto)
+SELECT *
+FROM tabla
+WHERE LOWER(columna) LIKE '%patron%';  -- Busca 'patron' sin distinguir mayúsculas y minúsculas
+
+-- 4. Uso con escape para caracteres especiales
+SELECT *
+FROM tabla
+WHERE columna LIKE 'patron\_%' ESCAPE '\';  -- Busca '%' como carácter literal
+
+-- 5. Uso con combinaciones de AND/OR
+SELECT *
+FROM tabla
+WHERE columna LIKE '%patron%' AND otra_columna = 'valor';
+
+SELECT *
+FROM tabla
+WHERE columna LIKE '%patron%' OR columna LIKE '%otro_patron%';
+
+-- 6. Coincidencias parciales
+SELECT *
+FROM tabla
+WHERE columna LIKE '[a-zA-Z]%'  -- Busca cadenas que empiecen con cualquier letra (en algunos SQL dialectos)
+
+SELECT *
+FROM tabla
+WHERE columna LIKE 'patron____'  -- Busca cadenas que tengan 'patron' seguido de 4 caracteres más
+```
