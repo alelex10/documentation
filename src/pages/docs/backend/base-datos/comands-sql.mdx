@@ -62,3 +62,133 @@ SELECT *
 FROM tabla
 WHERE columna LIKE 'patron____'  -- Busca cadenas que tengan 'patron' seguido de 4 caracteres más
 ```
+
+### **GROUP BY**
+
+GROUP BY en SQL se utiliza para agrupar filas que comparten valores comunes en una o más columnas, y luego se pueden aplicar **funciones de agregación** (como COUNT, SUM, AVG, MAX, MIN, etc.) sobre cada grupo.
+
+### Estructura básica de GROUP BY:
+```sql
+SELECT column_name, aggregate_function(column_name)
+FROM table_name
+GROUP BY column_name;
+```
+
+### Ejemplo 1: Contar el número de empleados por departamento
+Supongamos tenemos una tabla llamada `empleados` con las columnas `id`, `nombre`, `departamento`, `salario`.
+
+```sql
+SELECT departamento, COUNT(id) AS total_empleados
+FROM empleados
+GROUP BY departamento;
+```
+
+- Explicación: Esta consulta agrupa a los empleados por su departamento y cuenta cuántos empleados hay en cada uno.
+- Resultado esperado:
+  ```
+  +------------+------------------+
+  | departamento | total_empleados |
+  +------------+------------------+
+  | Ventas     | 5                |
+  | IT         | 8                |
+  | Finanzas   | 4                |
+  +------------+------------------+
+  ```
+
+### Ejemplo 2: Calcular ventas totales por región y país
+Supongamos tenemos una tabla `ventas` con las columnas `id`, `monto`, `pais`, `region`.
+
+```sql
+SELECT pais, region, SUM(monto) AS ventas_totales, AVG(monto) AS promedio_venta
+FROM ventas
+GROUP BY pais, region;
+```
+
+- Explicación: 
+  - Agrupa las ventas por `pais` y `region`.
+  - Calcula el total de ventas (`SUM`) y el promedio de venta (`AVG`) para cada grupo.
+- Resultado esperado:
+  ```
+  +-------+----------+---------------+---------------+
+  | pais  | region   | ventas_totales | promedio_venta |
+  +-------+----------+---------------+---------------+
+  | USA   | Norte   | 100000        | 5000          |
+  | USA   | Sur     | 80000         | 4000          |
+  | Canadá| Este    | 75000         | 3750          |
+  +-------+----------+---------------+---------------+
+  ```
+
+### Ejemplo 3: Uso de HAVING para filtrar grupos
+Supongamos queremos ver solo los departamentos que tienen más de 10 empleados:
+
+```sql
+SELECT departamento, COUNT(id) AS total_empleados
+FROM empleados
+GROUP BY departamento
+HAVING COUNT(id) > 10;
+```
+
+- Explicación:
+  - `HAVING` se usa para filtrar grupos que cumplen con una condición.
+  - En este caso, solo muestra los departamentos con más de 10 empleados.
+- Resultado esperado:
+  ```
+  +----------+------------------+
+  | departamento | total_empleados |
+  +----------+------------------+
+  | IT       | 8                |
+  +----------+------------------+
+  ```
+
+### Ejemplo 4: Uso de GROUP BY con ORDER BY
+Para ordenar los resultados de un GROUP BY:
+
+```sql
+SELECT departamento, COUNT(id) AS total_empleados
+FROM empleados
+GROUP BY departamento
+ORDER BY total_empleados DESC;
+```
+
+- Explicación:
+  - Ordena los departamentos por el número de empleados de mayor a menor.
+- Resultado esperado:
+  ```
+  +----------+------------------+
+  | departamento | total_empleados |
+  +----------+------------------+
+  | IT       | 8                |
+  | Ventas   | 5                |
+  | Finanzas | 4                |
+  +----------+------------------+
+  ```
+
+### Ejemplo 5: GROUP BY con INNER JOIN y subconsultas
+Supongamos tenemos dos tablas: `pedidos` y `clientes`, y queremos calcular el total de pedidos por cliente:
+
+```sql
+SELECT c.nombre, SUM(p.monto) AS total_pedido
+FROM clientes c
+INNER JOIN pedidos p ON c.id = p.cliente_id
+GROUP BY c.nombre;
+```
+
+- Explicación:
+  - Une las tablas `clientes` y `pedidos` por el `id` del cliente.
+  - Agrupa los resultados por el nombre del cliente y calcula el total de pedidos.
+- Resultado esperado:
+  ```
+  +----------+-------------+
+  | nombre   | total_pedido |
+  +----------+-------------+
+  | Juan     | 5000        |
+  | María    | 3000        |
+  | Pedro    | 4000        |
+  +----------+-------------+
+  ```
+
+### Resumen:
+- `GROUP BY` agrupa filas por valores comunes en las columnas especificadas.
+- Se usa comúnmente con funciones de agregación como `COUNT`, `SUM`, `AVG`, etc.
+- Puedes filtrar los grupos usando `HAVING` en lugar de `WHERE`.
+- Los resultados se pueden ordenar usando `ORDER BY`.
