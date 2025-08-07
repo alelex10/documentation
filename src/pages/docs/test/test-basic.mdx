@@ -7,16 +7,41 @@ layout: "/layout.astro"
 - **Ubicacion**: es mejor que los test esten en la misma carpeta que el codigo que se esta probando
 - **Nombre**: el nombre del archivo debe terminar con `.test.ts` o `.spec.ts`
 
-<h3><g-emoji class="g-emoji" alias="open_file_folder" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f4c2.png">📂</g-emoji> record</h3>
+<h3>
+	<g-emoji
+		class="g-emoji"
+		alias="open_file_folder"
+		fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f4c2.png"
+	>
+		📂
+	</g-emoji>{" "}
+	record
+</h3>
 <ul>
-  <li>🧪 <code>diff-object.test.ts</code></li>
-  <li>📄 <code>diff-object.ts</code></li>
-  <li>📄 <code>index.ts</code></li>
-  <li>🧪 <code>is-record-empty.test.ts</code></li>
-  <li>📄 <code>is-record-empty.ts</code></li>
-  <li>🧪 <code>is-record.test.ts</code></li>
-  <li>📄 <code>is-record.ts</code></li>
-  <li>📄 <code>with.ts</code> 👈</li>
+	<li>
+		🧪 <code>diff-object.test.ts</code>
+	</li>
+	<li>
+		📄 <code>diff-object.ts</code>
+	</li>
+	<li>
+		📄 <code>index.ts</code>
+	</li>
+	<li>
+		🧪 <code>is-record-empty.test.ts</code>
+	</li>
+	<li>
+		📄 <code>is-record-empty.ts</code>
+	</li>
+	<li>
+		🧪 <code>is-record.test.ts</code>
+	</li>
+	<li>
+		📄 <code>is-record.ts</code>
+	</li>
+	<li>
+		📄 <code>with.ts</code> 👈
+	</li>
 </ul>
 
 ## Excluir de la compilación de TypeScript
@@ -25,10 +50,102 @@ Para evitar que TypeScript compile los archivos de test, puedes agregar una entr
 
 ```json
 {
-  "compilerOptions": {
-    // otras opciones...
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts"]
+	"compilerOptions": {
+		// otras opciones...
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts"]
 }
+```
+
+# Test-Driven Development
+
+Test-Driven Development (TDD) o Desarrollo Dirigido por Pruebas es una práctica de desarrollo de software que implica escribir pruebas automatizadas antes de escribir el código que se está desarrollando.
+
+El proceso de TDD se puede resumir en los siguientes pasos:
+
+1. **Escribir una prueba**: se escribe una prueba que cubre una funcionalidad específica del código que se va a desarrollar.
+2. **La prueba falla**: se ejecuta la prueba y, como no hay código que la satisfaga, la prueba falla.
+3. **Escribir el código**: se escribe el código mínimo necesario para que la prueba pase.
+4. **La prueba pasa**: se ejecuta la prueba y, si el código es correcto, la prueba pasa.
+5. **Refactorizar**: se refactoriza el código para que sea más limpio, eficiente y fácil de mantener.
+6. **Repetir**: se repite el proceso para la siguiente funcionalidad o requisito.
+
+El objetivo de TDD es asegurarse de que el código sea correcto, fiable y fácil de mantener. Al escribir pruebas antes de escribir el código, se garantiza que el código sea testeable y que se cubran todos los casos posibles.
+
+### Example
+
+- describor la funcionalidad que quiero probar
+
+```ts
+import { describe, test } from "vitest";
+
+describe("fizzbuzz", () => {
+  test("given a number divisible by 3, should return Fizz");
+  test("given a number divisible by 5, should return Buzz");
+  test("given a number divisible by 3 AND 5, should return FizzBuzz");
+  test("given a number not divisible by 3 or 5, should return the number");
+});
+```
+
+- Escribimos el test antes de escribir el codigo que vamos a probar
+
+```ts
+import { describe, test } from "vitest";
+import { fizzbuzz } from "./fizzbuzz";
+
+describe("fizzbuzz", () => {
+  test("given a number divisible by 3, should return Fizz", () => {
+    const result = fizzbuzz(3);
+    expect(result).toBe("Fizz");
+  });
+})
+
+```
+
+- ejecutamos el test con `npm run test`
+- vemos fallar el test
+- escribimos lo minimo necesario para que el test pase
+
+```ts
+export function fizzbuzz(number: number){
+  retunr "Fizz";
+}
+```
+- cuando el test pasa, podemos seguir con el siguiente test
+
+```ts
+export function fizzbuzz(value: number){
+    if(value % 3 === 0 && value % 5 === 0){
+        return "FizzBuzz";
+    }
+    if(value % 3 === 0){
+        return "Fizz";
+    }
+    if(value % 5 === 0){
+        return "Buzz";
+    }
+    return value;
+}
+```
+- elminamos duplicados
+- refactorizamos
+
+```ts
+export function fizzbuzz(value: number) {
+	const isDivisibleBy3 = value % 3 === 0;
+	const isDivisibleBy5 = value % 5 === 0;
+
+	if (isDivisibleBy3 && isDivisibleBy5) {
+		return "FizzBuzz";
+	}
+	if (isDivisibleBy3) {
+		return "Fizz";
+	}
+	if (isDivisibleBy5) {
+		return "Buzz";
+	}
+	return value;
+}
+
 ```
