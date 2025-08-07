@@ -1,0 +1,34 @@
+---
+layout: "/layout.astro"
+---
+
+# Test basic
+
+- **Ubicacion**: es mejor que los test esten en la misma carpeta que el codigo que se esta probando
+- **Nombre**: el nombre del archivo debe terminar con `.test.ts` o `.spec.ts`
+
+<h3><g-emoji class="g-emoji" alias="open_file_folder" fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/1f4c2.png">📂</g-emoji> record</h3>
+<ul>
+  <li>🧪 <code>diff-object.test.ts</code></li>
+  <li>📄 <code>diff-object.ts</code></li>
+  <li>📄 <code>index.ts</code></li>
+  <li>🧪 <code>is-record-empty.test.ts</code></li>
+  <li>📄 <code>is-record-empty.ts</code></li>
+  <li>🧪 <code>is-record.test.ts</code></li>
+  <li>📄 <code>is-record.ts</code></li>
+  <li>📄 <code>with.ts</code> 👈</li>
+</ul>
+
+## Excluir de la compilación de TypeScript
+
+Para evitar que TypeScript compile los archivos de test, puedes agregar una entrada en el archivo `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    // otras opciones...
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts"]
+}
+```

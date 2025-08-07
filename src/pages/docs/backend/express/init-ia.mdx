@@ -50,7 +50,7 @@ Como muestra el diagrama, el flujo de datos es el siguiente:
 4. Los modelos definidos en TypeScript utilizan Sequelize para transformar operaciones JavaScript en consultas SQL
 5. Finalmente, Sequelize se comunica directamente con MySQL para ejecutar las consultas
 
-### Implementación Paso a Paso
+## Instalación Dependencias
 
 Crear el proyecto y configurar TypeScript
 
@@ -58,16 +58,12 @@ Crear el proyecto y configurar TypeScript
 mkdir api-express-ts-mysql
 cd api-express-ts-mysql
 npm init -y
-npm install express sequelize mysql2 sequelize-typescript reflect-metadata
+npm install express sequelize @sequelize/core dotenv mysql2 sequelize-typescript reflect-metadata
 # Instalar dependencias de desarrollo
-npm install -D typescript ts-node-dev @types/node @types/express 
+npm install -D typescript ts-node-dev @types/node @types/express sequelize-cli 
 ```
 
 #### 📦 Comando completo:
-
-```bash
-npm install express sequelize mysql2 sequelize-typescript reflect-metadata typescript ts-node-dev @types/node @types/express --save
-```
 
 ---
 

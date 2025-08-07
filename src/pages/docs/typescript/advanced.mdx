@@ -40,8 +40,8 @@ updateUser(2, { email: "nuevo@email.com", age: 30 }); // Actualiza email y edad
 
 **Important Considerations:**
 
-*   `Partial<T>` es extremadamente útil cuando se trata de operaciones de actualización donde es posible que solo desees modificar un subconjunto de las propiedades de un objeto.
-*   Al hacer que todas las propiedades sean opcionales, evitas tener que proporcionar valores predeterminados o manejar individualmente las propiedades que podrían faltar. Esto puede conducir a un código más limpio y fácil de mantener.
+- `Partial<T>` es extremadamente útil cuando se trata de operaciones de actualización donde es posible que solo desees modificar un subconjunto de las propiedades de un objeto.
+- Al hacer que todas las propiedades sean opcionales, evitas tener que proporcionar valores predeterminados o manejar individualmente las propiedades que podrían faltar. Esto puede conducir a un código más limpio y fácil de mantener.
 
 ## 🔒 Required`<T>`
 
@@ -90,7 +90,7 @@ interface Product {
 }
 
 // Solo seleccionamos las propiedades que necesitamos
-type ProductSummary = Pick<Product, 'id' | 'name' | 'price'>;
+type ProductSummary = Pick<Product, "id" | "name" | "price">;
 
 // Equivale a:
 // {
@@ -118,7 +118,7 @@ interface Employee {
 }
 
 // Excluimos información sensible
-type PublicEmployee = Omit<Employee, 'salary'>;
+type PublicEmployee = Omit<Employee, "salary">;
 
 // Equivale a:
 // {
@@ -143,42 +143,153 @@ Crea un tipo con propiedades de tipo `K` y valores de tipo `T`.
 type StatusCodes = Record<string, number>;
 
 const httpCodes: StatusCodes = {
-  'OK': 200,
-  'NOT_FOUND': 404,
-  'SERVER_ERROR': 500
+  OK: 200,
+  NOT_FOUND: 404,
+  SERVER_ERROR: 500,
 };
 
 // Usar con tipos más específicos
-type Theme = 'light' | 'dark' | 'auto';
+type Theme = "light" | "dark" | "auto";
 type ThemeConfig = Record<Theme, { background: string; text: string }>;
 
 const themeSettings: ThemeConfig = {
-  light: { background: '#ffffff', text: '#000000' },
-  dark: { background: '#000000', text: '#ffffff' },
-  auto: { background: 'system', text: 'system' }
+  light: { background: "#ffffff", text: "#000000" },
+  dark: { background: "#000000", text: "#ffffff" },
+  auto: { background: "system", text: "system" },
 };
 ```
 
 ### 🔗 Otros Utility Types útiles
 
-*   `Exclude<T, U>` - Excluye tipos de una unión.
-    ```typescript
-    type Colors = 'red' | 'green' | 'blue' | 'yellow';
-    type PrimaryColors = Exclude<Colors, 'yellow'>; // 'red' | 'green' | 'blue'
-    ```
-*   `Extract<T, U>` - Extrae tipos de una unión.
-    ```typescript
-    type ExtractedColors = Extract<Colors, 'red' | 'blue'>; // 'red' | 'blue'
-    ```
-*   `NonNullable<T>` - Excluye `null` y `undefined`.
-    ```typescript
-    type MaybeString = string | null | undefined;
-    type DefinitelyString = NonNullable<MaybeString>; // string
-    ```
-*   `ReturnType<T>` - Obtiene el tipo de retorno de una función.
-    ```typescript
-    function getUser() {
-      return { id: 1, name: 'Juan' };
-    }
-    type UserReturnType = ReturnType<typeof getUser>; // { id: number; name: string; }
-    ```
+- `Exclude<T, U>` - Excluye tipos de una unión.
+  ```typescript
+  type Colors = "red" | "green" | "blue" | "yellow";
+  type PrimaryColors = Exclude<Colors, "yellow">; // 'red' | 'green' | 'blue'
+  ```
+- `Extract<T, U>` - Extrae tipos de una unión.
+  ```typescript
+  type ExtractedColors = Extract<Colors, "red" | "blue">; // 'red' | 'blue'
+  ```
+- `NonNullable<T>` - Excluye `null` y `undefined`.
+  ```typescript
+  type MaybeString = string | null | undefined;
+  type DefinitelyString = NonNullable<MaybeString>; // string
+  ```
+- `ReturnType<T>` - Obtiene el tipo de retorno de una función.
+  ```typescript
+  function getUser() {
+    return { id: 1, name: "Juan" };
+  }
+  type UserReturnType = ReturnType<typeof getUser>; // { id: number; name: string; }
+  ```
+
+## Extraer tipos de una `Promise<string>`
+
+```typescript
+type PromiseType = Promise<string>;
+
+type ResultType = Awaited<PromiseType>;
+// ResultType es string
+```
+
+# Enum en TypeScript
+
+¡Claro! Este es un patrón muy común y útil en TypeScript para crear un conjunto de constantes y derivar un tipo a partir de ellas.
+
+Vamos a analizarlo en dos partes:
+
+### 1. El Objeto Constante
+
+```typescript
+const TaskStatus = {
+  TODO: "todo",
+  IN_PROGRESS: "in-progress",
+  DONE: "done",
+} as const;
+```
+
+- Se crea un objeto JavaScript llamado `TaskStatus`.
+- El `as const` al final es la parte clave. Es una "aserción de const" de TypeScript que le dice al compilador dos cosas:
+  1.  Que las propiedades del objeto (`TODO`, `IN_PROGRESS`, `DONE`) sean de solo lectura (`readonly`).
+  2.  Que infiera los tipos más específicos posibles. En lugar de que el tipo de `TaskStatus.TODO` sea `string`, será el tipo literal `"todo"`.
+
+Gracias a `as const`, TypeScript entiende que el objeto `TaskStatus` tiene este tipo exacto:
+
+```typescript
+{
+    readonly TODO: "todo";
+    readonly IN_PROGRESS: "in-progress";
+    readonly DONE: "done";
+}
+```
+
+### 2. El Tipo Derivado
+
+```typescript
+type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
+```
+
+Aquí es donde ocurre la "magia" para crear el tipo. Desglosemos la parte derecha:
+
+- `typeof TaskStatus`: Obtiene el **tipo** del objeto `TaskStatus` que definimos antes.
+- `keyof typeof TaskStatus`: Obtiene una unión de todas las **claves** (keys) de ese tipo. El resultado es: `"TODO" | "IN_PROGRESS" | "DONE"`.
+- `( ... )[ ... ]`: Esto se conoce como "indexed access type". Es como acceder a los valores de un objeto, pero a nivel de tipos.
+
+Al combinar todo, le estamos pidiendo a TypeScript: "Dame un tipo que sea una unión de los tipos de todos los **valores** del objeto `TaskStatus`".
+
+El resultado final es que el `type TaskStatus` se convierte en:
+
+```typescript
+type TaskStatus = "todo" | "in-progress" | "done";
+```
+
+### ¿Por qué es útil este patrón?
+
+Es una forma de tener una **única fuente de verdad**.
+
+1.  **En tiempo de ejecución**, usas el objeto: `if (myTask.status === TaskStatus.IN_PROGRESS)`.
+2.  **En tiempo de compilación**, usas el tipo para asegurar que solo se usen valores válidos: `function updateTask(status: TaskStatus) { ... }`.
+
+Si en el futuro necesitas añadir un nuevo estado, como `ARCHIVED`, solo tienes que modificar el objeto:
+
+```typescript
+const TaskStatus = {
+  TODO: "todo",
+  IN_PROGRESS: "in-progress",
+  DONE: "done",
+  ARCHIVED: "archived", // <-- Nuevo estado
+} as const;
+
+// El tipo TaskStatus se actualiza automáticamente a:
+// "todo" | "in-progress" | "done" | "archived"
+// ¡No necesitas cambiar nada más!
+```
+
+Esto hace que tu código sea más fácil de mantener y menos propenso a errores.
+
+# Intersección de tipos
+
+```typescript
+type User = {
+  id: number;
+  name: string;
+};
+type Admin = {
+  role: string;
+};
+
+type AdminUser = User & Admin;
+
+const admin: AdminUser = {
+  id: 1,
+  name: "Santiago",
+  role: "superadmin",
+};
+```
+
+# Tipos Condicionales
+
+```typescript
+type IsString<T> = T extends any[] ? T[number] : T;
+
+```

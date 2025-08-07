@@ -5,5 +5,74 @@ layout: "/layout.astro"
 # Diferencias entre interface y type
 
 # tipado dinámico y estático
+
 En lenguajes de tipado dinámico, el tipo de una variable se verifica en tiempo de ejecución, mientras que en lenguajes de tipado estático, se verifica en tiempo de compilación.
 
+# Guarda de tipos
+
+## Typeof
+
+- `typeof` es una "guarda de tipo"
+
+```ts
+function validateUser(user: string | null) {
+  if (typeof user === "string") {
+    // se puede usar las propiedades de string dentro de este if
+    return user.toUpperCase();
+  }
+  return null;
+}
+```
+
+## Instanceof
+
+- `instanceof` es otra "guarda de tipo" que se usa para verificar si
+  una variable es una instancia de una clase específica.
+
+```ts
+class Dog {
+  bark() {
+    return "Woof!";
+  }
+}
+class Cat {
+  meow() {
+    return "Meow!";
+  }
+}
+
+function makeNoise(animal: Dog | Cat) {
+  if (animal instanceof Dog) {
+    return animal.bark();
+  } else {
+    return animal.meow();
+  }
+}
+```
+
+## In operator
+
+- `in` es otra "guarda de tipo" que se usa para verificar si
+  una propiedad existe en un objeto.
+    - **propiedad de un objeto** es una clave que se usa para acceder a un valor dentro de un objeto.
+
+```ts
+interface Car {
+  drive() {
+    return "Driving a car";
+  }
+}
+
+interface Boat {
+    sail() {
+        return "Sailing a boat";
+    }
+}
+function operateVehicle(vehicle: Car | Boat) {
+  if ("drive" in vehicle) {
+    return vehicle.drive();
+  } else {
+    return vehicle.sail();
+  }
+}
+```
