@@ -2,6 +2,12 @@
 layout: "/layout.astro"
 ---
 
+# Datos de durso a repasar
+
+- it y test son lo mismo, son mas un alias
+- para las descripciones en los parametros de test o it
+  - usamos como regla general "accion a realizar(it)", "condiciones esperadas (when o with)" y "resultado esperado (expect)"
+
 # Instalación y configuración de Vitest
 
 Vitest es un framework de pruebas unitarias y de integración para proyectos JavaScript/TypeScript, fuertemente integrado con Vite.
@@ -37,15 +43,15 @@ import { describe, test, expect } from "vitest";
 import { sum } from "./sum.js";
 
 describe("Sum", () => {
-  test("sum(1,2) === 3", () => {
-    expect(sum(1, 2)).toBe(3);
-  });
-  test("sum(2,2) === 4", () => {
-    expect(sum(2, 2)).toBe(4);
-  });
-  test("sum(3,2) === 5", () => {
-    expect(sum(3, 2)).toBe(5);
-  });
+	test("sum(1,2) === 3", () => {
+		expect(sum(1, 2)).toBe(3);
+	});
+	test("sum(2,2) === 4", () => {
+		expect(sum(2, 2)).toBe(4);
+	});
+	test("sum(3,2) === 5", () => {
+		expect(sum(3, 2)).toBe(5);
+	});
 });
 ```
 
@@ -55,34 +61,36 @@ Para evitar que TypeScript compile los archivos de test, puedes agregar una entr
 
 ```json
 {
-  "compilerOptions": {
-    "outDir": "dist",
-    "target": "ESNext",
-    "strict": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "noEmit": true // Evita la emisión de archivos JavaScript al compilar(tsc)
-  },
-  "include": ["src/**/*.ts"]
+	"compilerOptions": {
+		"outDir": "dist",
+		"target": "ESNext",
+		"strict": true,
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"noEmit": true // Evita la emisión de archivos JavaScript al compilar(tsc)
+	},
+	"include": ["src/**/*.ts"]
 }
 ```
 
 - Para excluir los archivos de test al hacer build, puedes usar la propiedad `exclude`:
 - en el archivo `tsconfig.build.json`
 
-```json 
+```json
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "noEmit": false // Permite la emisión de archivos JavaScript al compilar
-  },
-  "exclude": ["**/*.test.ts", "**/*.spec.ts", "src/pages/docs/test/**"]
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"noEmit": false // Permite la emisión de archivos JavaScript al compilar
+	},
+	"exclude": ["**/*.test.ts", "**/*.spec.ts", "src/pages/docs/test/**"]
 }
 ```
+
 - Configuro el script de build en el `package.json`:
 
 ```json
 "scripts": {
     "build": "tsc --project tsconfig.build.json"
 }
+```

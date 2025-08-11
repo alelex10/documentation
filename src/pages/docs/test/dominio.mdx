@@ -1,0 +1,376 @@
+---
+layout: "/layout.astro"
+---
+
+# Dominio
+
+# Estructura de Carpetas
+
+¡Tienes razón! Existe una **confusión de roles** entre **servicio** y **repositorio** en el código que proporcionaste. Vamos a corregirlo y aclarar los conceptos paso a paso:
+
+---
+
+### ⚠️ **Error principal: Confusión entre `UserService` y `IUserRepository`**
+1. **`IUserRepository.ts`** define una interfaz que parece pertenecer a la capa de **dominio** (lógica de negocio), pero no corresponde a un **repositorio**.
+2. **`UserService`** se usa como nombre de la interfaz, pero debería pertenecer a la capa de **dominio** y manejar lógica de reglas de negocio, no acceso a datos.
+
+---
+
+### ✅ **Definición correcta de roles en Clean Architecture**
+| **Componente**        | **Responsabilidad**                               | **Ubicación**      |
+|------------------------|----------------------------------------------------|---------------------|
+| **`IUserRepository`** | Interface que define métodos de persistencia (CRUD) | Capa de Dominio     |
+| **`UserRepository`**  | Implementación real (por ejemplo, con ORM)         | Capa de Infraestructura |
+| **`UserRepositoryMock`** | Mock para tests unitarios (simula `IUserRepository`) | Capa de Tests        |
+| **`UserService`**     | Clase que contiene lógica de negocio                | Capa de Dominio     |
+
+---
+
+### 🛠️ **Corrección del código**
+
+#### 1. Definir la interfaz correcta del repositorio
+
+```ts
+// domain/src/repositories/IUserRepository.ts
+export interface IUserRepository {
+  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
+  save(user: User): Promise<void>;
+}
+```
+
+#### 2. Mock del repositorio (simula la interfaz `IUserRepository`)
+
+```ts
+// domain/src/mocks/UserRepositoryMock.ts
+import { User } from "../entities";
+import { IUserRepository } from "../repositories/IUserRepository";
+
+export const createMockUserRepository = (users: User[]): IUserRepository => {
+  return {
+    async findById(id: string): Promise<User | null> {
+      return users.find((user) => user.id === id) || null;
+    },
+    async findByEmail(email: string): Promise<User | null> {
+      return users.find((user) => user.email === email) || null;
+    },
+    async save(user: User): Promise<void> {
+      users.push(user);
+    },
+  };
+};
+```
+
+#### 3. Servicio de dominio (usa `IUserRepository`)
+
+```ts
+// domain/src/services/UserService.ts
+import { IUserRepository } from "../repositories/IUserRepository";
+import { User } from "../entities";
+
+export class UserService {
+  constructor(private userRepository: IUserRepository) {}
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findByEmail(email);
+  }
+
+  async registerUser(userData: Omit<User, "id">): Promise<void> {
+    const newUser = {
+      ...userData,
+      id: Math.random().toString(36).substring(2), // Ej. ID ficticio
+    };
+    await this.userRepository.save(newUser);
+  }
+}
+```
+
+#### 4. Implementación real del repositorio (Ejemplo con infraestructura)
+
+```ts
+// infrastructure/src/repositories/UserRepositoryImpl.ts
+import { IUserRepository } from "../../domain/repositories/IUserRepository";
+import { User } from "../../domain/entities";
+import { PrismaClient } from "@prisma/client";
+
+export class UserRepositoryImpl implements IUserRepository {
+  private prisma: PrismaClient;
+
+  constructor() {
+    this.prisma = new PrismaClient();
+  }
+
+  async findById(id: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    return user ? User.fromPrisma(user) : null;
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    return user ? User.fromPrisma(user) : null;
+  }
+
+  async save(user: User): Promise<void> {
+    await this.prisma.user.upsert({
+      where: { id: user.id },
+      update: user,
+      create: user,
+    });
+  }
+}
+```
+
+---
+
+### 🔎 **Ejemplo de test unitario usando `UserRepositoryMock`**
+
+```ts
+// domain/src/UserService.test.ts
+import { createMockUserRepository } from "./mocks/UserRepositoryMock";
+import { UserService } from "./services/UserService";
+import { User } from "./entities";
+
+describe("UserService", () => {
+  let mockUsers: User[];
+  let userRepositoryMock: IUserRepository;
+  let userService: UserService;
+
+  beforeEach(() => {
+    mockUsers = [];
+    userRepositoryMock = createMockUserRepository(mockUsers);
+    userService = new UserService(userRepositoryMock);
+  });
+
+  it("debe registrar un nuevo usuario", async () => {
+    const newUser = {
+      name: "Ana",
+      email: "ana@example.com",
+      password: "123456",
+    };
+
+    await userService.registerUser(newUser);
+
+    expect(mockUsers).toHaveLength(1);
+    expect(mockUsers[0].email).toBe("ana@example.com");
+  });
+
+  it("debe encontrar un usuario por email", async () => {
+    const existingUser = new User("123", "Javier", "javier@example.com");
+    mockUsers.push(existingUser);
+
+    const foundUser = await userService.getUserByEmail("javier@example.com");
+
+    expect(foundUser).not.toBeNull();
+    expect(foundUser!.name).toBe("Javier");
+  });
+});
+```
+
+---
+
+### ✅ **Conclusión**
+
+1. **La interfaz del repositorio** (`IUserRepository`) define los métodos que debe soportar cualquier implementación (mock o real).
+2. **El mock** (`createMockUserRepository`) **implementa la misma interfaz** (`IUserRepository`) y no usa lógica real (ORM).
+3. **El servicio** (`UserService`) depende de la interfaz del repositorio, no de una implementación concreta.
+4. Al usar una interfaz común, puedes **testear la capa de dominio en aislamiento**.
+
+---
+
+### 🔁 Resumen con diagramas
+
+#### 1. Arquitectura en Producción:
+
+```
+[UserService] (dominio)
+   │
+   └──> [UserRepositoryImpl] (infraestructura)
+         │
+         └──> [ORM (Prisma/SQL)] (persistencia)
+```
+
+#### 2. Arquitectura en Tests:
+
+```
+[UserService] (dominio)
+   │
+   └──> [UserRepositoryMock] (dominio)
+         │
+         └──> No hay base de datos real (simulación)
+```
+
+---
+
+# Casos de Uso y services
+
+¡Sí! Aunque en Clean Architecture el nombre "use case" (caso de uso) es más común que "service" (servicio) en el contexto de esta lógica, **`RegisterUser.ts` encaja perfectamente como un "caso de uso" (use case)**. Vamos a desglosarlo:
+
+---
+
+### ✅ **¿Qué es un "use case" (caso de uso) en Clean Architecture?**
+Un **use case** (caso de uso) es una unidad de lógica que implementa una funcionalidad específica del negocio.  
+**Ejemplo**:  
+- Registrar un usuario.  
+- Validar un email.  
+- Realizar un pago.  
+
+El caso de uso es:
+- **Encapsulado**: No tiene dependencias externas salvo interfaces definidas en el dominio.  
+- **Testeable en aislamiento**: Puedes simular sus dependencias (repositorios, etc.) con mocks.  
+- **Centrado en el dominio**: Maneja reglas de negocio, no lógica de infraestructura (ORM, bases de datos, etc.).
+
+---
+
+### 🔍 Tu código en `RegisterUser.ts`
+```ts
+export async function RegisterUser(
+  { userRepository }: RegisterUserDependencies,
+  { email, username, password }: RegisterUserPayload
+): Promise<InvalidDataError | void> {
+  // 1. Validación de datos
+  const hasError = validateData(email, username, password);
+  if (hasError) {
+    return hasError;
+  }
+
+  // 2. Verificar si el usuario ya existe
+  const existingUser = await userRepository.findByEmail(email);
+  if (existingUser) {
+    return createInvalidDataError("Email already in use");
+  }
+
+  // 3. Registrar al usuario
+  const user: User = {
+    id: crypto.randomUUID(),
+    username,
+    email,
+    password,
+    role: "USER",
+  };
+
+  await userRepository.save(user);
+}
+```
+
+Este código encapsula **toda la lógica para registrar un usuario**, incluyendo:
+1. Validación de los campos de entrada (email, username, password).
+2. Verificación de si el email ya está registrado (usando el repositorio).
+3. Asignación de un `id` único (generado en memoria, para tests o produccion).
+4. Salvando al usuario usando el repositorio.
+
+---
+
+### 🤔 ¿Por qué no llamarlo "UserService"?
+En Clean Architecture, el nombre **"UserService"** generalmente se usa para:  
+- Agrupar varios casos de uso relacionados con usuarios.  
+- Contener lógica de negocio compleja que requiere coordinar múltiples casos de uso o reglas.  
+
+**Ejemplo de UserService**:
+```ts
+class UserService {
+  private registerUserUseCase: RegisterUser;
+  private loginUseCase: Login;
+
+  constructor(dependencies: UserServiceDependencies) {
+    this.registerUserUseCase = RegisterUser(dependencies);
+    this.loginUseCase = Login(dependencies);
+  }
+
+  async register(input: UserPayload) {
+    return this.registerUserUseCase(input);
+  }
+
+  async login(input: LoginRequest) {
+    return this.loginUseCase(input);
+  }
+}
+```
+
+---
+
+### ✅ Entonces, ¿qué es `RegisterUser.ts`?
+1. **Es un "caso de uso" (use case)**.
+   - Encapsula toda la lógica para "registrar un usuario".
+   - Depende solo de interfaces definidas en el dominio (`IUserRepository`).
+   - Es testeable con mocks (ej: sin base de datos).
+
+2. **No es un "servicio" (service)**.
+   - Un servicio generalmente compone o coordina múltiples casos de uso.
+   - Los servicios pueden usar casos de uso como "bloques de construcción".
+
+---
+
+### 🧠 Ventajas de esta estructura en TDD (Test-Driven Development)
+- **Tests unitarios sencillos**: Puedes:
+  - Mockear `userRepository.findByEmail` para simular que el email ya está en uso.
+  - Mockear `userRepository.save` para verificar que el usuario se guarda correctamente.
+- **Lógica del dominio desacoplada**: No depende de ORM, APIs u otras implementaciones específicas.
+- **Mantén el "enfoque en el dominio"**: La lógica se centra en el **proceso del registro**, no en cómo se hace el acceso a datos.
+
+---
+
+### 📦 ¿Dónde encaja esto en la arquitectura?
+```
++-------------------+     +-------------------+     +-------------------+
+|  Presentation     |     |  Application      |     |  Domain            |
+| (web/controllers) |     | (ports/adapters)  |     | (entities/use cases)|
++--------+----------+     +---------+---------+     +---------+----------+
+         |                             |                         |
+         |                             |                         |
+         v                             v                         v
++-------------------+     +-------------------+
+|  Infrastructure   |     |    Test/Mocks      |
+| (ORM, repos, etc.)|     | (mock repos, etc.)|
++-------------------+     +-------------------+
+```
+
+- **`RegisterUser.ts`** pertenece a **Domain (use cases)**.
+- **`IUserRepository`** es una **interface definida en Domain**.
+- **`UserRepositoryMock`** pertenece a **Test/Mocks**.
+- **`UserRepositoryImpl`** (ej: ORM) pertenece a **Infrastructure**.
+
+---
+
+### 🛠️ Ejemplo de Test Unitario con TDD
+```ts
+describe("RegisterUser.useCase", () => {
+  it("deve devolver error si el email ya existe", async () => {
+    // Arrange
+    const existingUser = {
+      id: "123",
+      email: "user@example.com",
+      username: "oldUser",
+      password: "abc123",
+    };
+
+    const userRepositoryMock = {
+      findByEmail: jest.fn().mockResolvedValueOnce(existingUser),
+      save: jest.fn(), // no será llamado
+    };
+
+    // Act
+    const result = await RegisterUser(
+      { userRepository: userRepositoryMock },
+      {
+        email: "user@example.com",
+        username: "newUser",
+        password: "123",
+      }
+    );
+
+    // Assert
+    expect(result).toBeInstanceOf(InvalidDataError);
+    expect(result?.message).toBe("Email already in use");
+    expect(userRepositoryMock.save).not.toHaveBeenCalled();
+  });
+});
+```
+
+---
+
+### ✅ Conclusión
+- **`RegisterUser.ts` es un "caso de uso" (use case)**, que define la lógica para una funcionalidad específica del dominio.
+- No es un "servicio" (que sería una capa superior que compone múltiples casos de uso).
+- Esta estructura es ideal para TDD, ya que permite mockear dependencias y testear únicamente la lógica relacionada con el registro de usuarios.
+
+¡Estás en el camino correcto! 🚀 Si usas más casos de uso como este, mantendrás tu código limpio, desacoplado y fácilmente testable.

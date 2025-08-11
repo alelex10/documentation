@@ -1,0 +1,335 @@
+---
+layout: "/layout.astro"
+---
+
+# SOLID
+
+- Principios a nivel de modulo
+  - un **modulo** es la unidad de codigo mas pequeña de una arquitectura
+  - un **modulo** define **typos de datos** e **interfaces** externas para su uso
+  - en **java** se usan **clases**, en **python** se usan **modulos** y en **ts** es un **archivo.ts**
+  - clases y modulos se refieeren a la misma cosa
+- **Principios SOLID**: son una serie de principios de diseño que ayudan a crear software más fácil de entender y mantener.
+
+## Principio S: **Single Responsibility Principle (Principio de Responsabilidad Unica)**
+
+- Una clase debe ser responsable de una sola cosa
+- Una clase debe tener una sola razón para cambiar
+
+## Principio D: **Dependency Inversion Principle (Principio de Inversión de Dependencias)**
+
+**Principio de Inversión de Dependencias (DIP)** es uno de los principios SOLID del diseño de software, y su objetivo es mejorar la modularidad y reducir el acoplamiento entre clases. A continuación, te lo explico con más detalle:
+
+### **Definición simplificada:**
+
+- **"Las clases deben depender de abstracciones, no de concretos."**
+
+Esto significa que, en lugar de que una clase dependa directamente de otra clase concreta, debe depender de una interfaz o una clase abstracta. De esta manera, las dependencias se basan en contratos (definidos por las abstracciones) en lugar de implementaciones específicas.
+
+---
+
+### **¿Por qué es importante?**
+
+El DIP ayuda a:
+
+1. **Reducir el acoplamiento entre clases:** Si una clase depende de una implementación concreta, cualquier cambio en esa implementación afectará directamente a la clase que depende de ella. Al depender de abstracciones, los cambios son más controlados.
+2. **Mejorar la extensibilidad:** Es más fácil añadir nuevas funcionalidades sin modificar el código existente, ya que las clases pueden trabajar con diferentes implementaciones sin necesidad de cambios en su estructura.
+3. **Facilitar la prueba:** Al depender de abstracciones, es más sencillo mockear (simular) las dependencias en pruebas unitarias.
+
+---
+
+### **Ejemplo práctico:**
+
+Imagina que tienes una clase `Pagador` que necesita un método para realizar pagos. Sin DIP, podrías hacer algo así:
+
+```python
+class PayPal:
+    def pagar(self, monto):
+        print(f"Pago realizado con PayPal: {monto}")
+
+class Pagador:
+    def __init__(self):
+        self.paypal = PayPal()
+
+    def realizar_pago(self, monto):
+        self.paypal.pagar(monto)
+```
+
+Aquí, `Pagador` depende directamente de `PayPal`, una implementación concreta. Si más adelante quieres añadir un nuevo método de pago (como tarjeta de crédito), tendrías que modificar la clase `Pagador` para aceptar diferentes tipos de pagadores.
+
+#### **Aplicando DIP:**
+
+En lugar de depender de `PayPal`, creamos una abstracción (interfaz o clase abstracta) que defina el contrato que deben seguir todas las clases de pago:
+
+```python
+from abc import ABC, abstractmethod
+
+class MetodoPago(ABC):
+    @abstractmethod
+    def pagar(self, monto):
+        pass
+
+class PayPal(MetodoPago):
+    def pagar(self, monto):
+        print(f"Pago realizado con PayPal: {monto}")
+
+class TarjetaCredito(MetodoPago):
+    def pagar(self, monto):
+        print(f"Pago realizado con Tarjeta de Crédito: {monto}")
+
+class Pagador:
+    def __init__(self, metodo_pago: MetodoPago):
+        self.metodo_pago = metodo_pago
+
+    def realizar_pago(self, monto):
+        self.metodo_pago.pagar(monto)
+```
+
+Ahora, `Pagador` depende de la abstracción `MetodoPago` en lugar de una implementación concreta. Esto significa que puedes pasar cualquier clase que implemente `MetodoPago` (como `PayPal` o `TarjetaCredito`) sin necesidad de modificar `Pagador`.
+
+---
+
+### **Conclusión:**
+
+El DIP nos enseña que las clases no deben depender directamente de otras clases concretas, sino de abstracciones (interfases o clases abstractas). De esta manera, el sistema se vuelve más modular, flexible y fácil de mantener.
+
+## Principio O: **Open/Closed Principle (Principio de Abierto/Cerrado)**
+
+El Principio de Abierto/Cerrado (Open/Closed Principle) es uno de los cinco principios SOLID del diseño de software. Su objetivo principal es garantizar que las clases de software sean abiertas a la extensión pero cerradas a la modificación. Esto significa que una clase debería permitir la incorporación de nuevas funcionalidades sin alterar su estructura existente.
+
+### **Definición:**
+
+- **Abierto a la extensión:** La clase debe poder adaptarse para incluir nuevas funcionalidades.
+- **Cerrado a la modificación:** La clase no debe necesitar cambios en su código fuente para añadir nuevas funcionalidades.
+
+### **Importancia:**
+
+- **Estabilidad del código:** Reduce el riesgo de introducir errores al modificar clases existentes.
+- **Facilidad de mantenimiento:** Simplifica la adición de nuevas características sin alterar el código establecido.
+- **Extensibilidad:** Permite que el sistema crezca y se adapte a nuevas necesidades sin complicaciones.
+
+### **Ejemplo Práctico:**
+
+Supongamos que tenemos un sistema de cálculo de áreas de diferentes figuras geométricas.
+
+#### **Sin aplicar el Principio de Abierto/Cerrado:**
+
+```python
+class Figura:
+    def __init__(self, tipo):
+        self.tipo = tipo
+
+    def calcular_area(self):
+        if self.tipo == 'circulo':
+            radio = 5  # Asumiendo un radio predeterminado
+            return 3.1416 * radio ** 2
+        elif self.tipo == 'rectangulo':
+            largo = 4  # Asumiendo un largo predeterminado
+            ancho = 3   # Asumiendo un ancho predeterminado
+            return largo * ancho
+```
+
+En este caso, cada vez que se necesite añadir una nueva figura, habría que modificar la clase `Figura` para incluir un nuevo `elif`, lo que viola el Principio de Abierto/Cerrado.
+
+#### **Aplicando el Principio de Abierto/Cerrado:**
+
+En lugar de modificar la clase `Figura`, creamos una jerarquía de clases donde cada figura concreta hereda de una clase base `Figura` y redefine el método `calcular_area()`.
+
+```python
+from abc import ABC, abstractmethod
+
+class Figura(ABC):
+    @abstractmethod
+    def calcular_area(self):
+        pass
+
+class Circulo(Figura):
+    def __init__(self, radio):
+        self.radio = radio
+
+    def calcular_area(self):
+        return 3.1416 * self.radio ** 2
+
+class Rectangulo(Figura):
+    def __init__(self, largo, ancho):
+        self.largo = largo
+        self.ancho = ancho
+
+    def calcular_area(self):
+        return self.largo * self.ancho
+
+# Ahora, para añadir una nueva figura, simplemente creamos una nueva clase
+class Triangulo(Figura):
+    def __init__(self, base, altura):
+        self.base = base
+        self.altura = altura
+
+    def calcular_area(self):
+        return (self.base * self.altura) / 2
+```
+
+De esta manera, la clase base `Figura` permanece cerrada a la modificación, y cada nueva figura se implementa como una clase derivada, manteniendo el sistema abierto a la extensión.
+
+### **Conclusión:**
+
+El Principio de Abierto/Cerrado guía al diseño de software para que las clases sean fáciles de extender sin necesidad de modificar su estructura existente. Esto mejora la estabilidad y mantenibilidad del código, permitiendo la incorporación de nuevas funcionalidades de manera eficiente y sin riesgo de introducir errores en la funcionalidad existente.
+
+## Principio L: **Liskov Substitution Principle (Principio de Liskov)**
+
+El Principio de Sustitución de Liskov (Liskov Substitution Principle, LSP) es uno de los cinco principios SOLID del diseño de software. Fue introducido por Barbara Liskov y expresa una regla fundamental para el uso correcto de la herencia en la programación orientada a objetos.
+
+### **Definición:**
+
+El Principio de Sustitución de Liskov establece que:
+
+> **"Las funciones que usan una clase base deben poder usar cualquier subclase sin conocer los detalles de la implementación de la subclase."**
+
+En términos más sencillos, significa que cualquier subclase debe ser completamente sustituible por su clase base. Es decir, si una clase B hereda de una clase A, cualquier instancia de B debe poder ser usada en lugar de una instancia de A sin que el comportamiento del programa se vea afectado negativamente.
+
+### **Importancia:**
+
+- **Mantibilidad del código:** Ayuda a evitar errores al modificar o extender el comportamiento de las clases base.
+- **Robustez del diseño:** Garantiza que las jerarquías de herencia sean consistentes y fiables.
+- **Extensibilidad:** Facilita la creación de nuevas subclases sin romper la funcionalidad existente.
+
+### **Ejemplo Práctico:**
+
+Imagina que tienes una jerarquía de clases para diferentes tipos de aves:
+
+```python
+class Ave:
+    def volar(self):
+        pass
+
+class Aguila(Ave):
+    def volar(self):
+        print("El águila está volando.")
+
+class Pinguino(Ave):
+    def volar(self):
+        print("El pinguino no puede volar.")
+```
+
+En este caso, aunque `Pinguino` hereda de `Ave`, no puede volar. Si tienes una función que espera un objeto de tipo `Ave` y llama al método `volar()`, esta función fallará o se comportará de manera inesperada cuando se le pase un `Pinguino`.
+
+#### **Aplicando LSP:**
+
+Para cumplir con el Principio de Sustitución de Liskov, debemos redefinir la jerarquía para que las subclases se comporten de manera consistente con la clase base:
+
+```python
+from abc import ABC, abstractmethod
+
+class AveVoladora(ABC):
+    @abstractmethod
+    def volar(self):
+        pass
+
+class Aguila(AveVoladora):
+    def volar(self):
+        print("El águila está volando.")
+
+class Pinguino:
+    def nadar(self):
+        print("El pinguino está nadando.")
+```
+
+Ahora, `Pinguino` no hereda de `AveVoladora`, ya que no puede volar. Si necesitas una clase base común para diferentes tipos de aves, puedes crear una clase `Ave` que no tenga el método `volar()`, y que las aves que pueden volar hereden de `AveVoladora`.
+
+### **Conclusión:**
+
+El Principio de Sustitución de Liskov nos recuerda que las subclases deben comportarse como se espera que lo hagan las clases base. Esto garantiza que cualquier subclase pueda ser usada en lugar de su clase base sin causar errores o comportamientos inesperados. Al seguir este principio, creamos sistemas más robustos y mantenibles.
+
+## Principio I: **Interface Segregation Principle (Principio de Separación de Interfaz)**
+
+El **Principio de Separación de Interfaz (ISP)** es el cuarto principio de los principios SOLID del diseño de software. Fue introducido por Robert C. Martin, también conocido como "Uncle Bob". Este principio se centra en el diseño de interfaces y busca mejorar la modularidad y flexibilidad del código.
+
+### **Definición:**
+El ISP establece que:
+
+> **"Los clientes no deben estar obligados a depender de interfaces que no usan."**
+
+En otras palabras, una interfaz debe ser lo suficientemente específica como para que las clases que la implementan no tengan que definir métodos que no necesitan. Esto se logra dividiendo una interfaz grande en varias interfaces más pequeñas y especializadas.
+
+### **Importancia:**
+- **Reducir la dependencia innecesaria:** Las clases no dependen de métodos que no utilizan.
+- **Mejorar la modularidad:** Cada interfaz se centra en un propósito específico.
+- **Facilitar el mantenimiento:** Si se necesita modificar una funcionalidad, solo se afecta a las clases que realmente la usan.
+- **Reducir el acoplamiento:** Las clases están menos acopladas a cambios en interfaces que no utilizan.
+
+### **Ejemplo Práctico:**
+Imagina que estás diseñando un sistema de impresoras. Algunas impresoras pueden imprimir, escanear y faxear, mientras que otras solo imprimen.
+
+#### **Sin aplicar ISP:**
+Si creamos una sola interfaz `Impresora` con todos los métodos:
+
+```python
+class Impresora:
+    def imprimir(self, documento):
+        pass
+    
+    def escanear(self, documento):
+        pass
+    
+    def faxear(self, documento, numero):
+        pass
+
+class ImpresoraBasica(Impresora):
+    def imprimir(self, documento):
+        print("Imprimiendo el documento...")
+    
+    def escanear(self, documento):
+        # No implementado, pero obligado a definir
+        raise NotImplementedError("Esta impresora no puede escanear")
+    
+    def faxear(self, documento, numero):
+        # No implementado, pero obligado a definir
+        raise NotImplementedError("Esta impresora no puede faxear")
+
+class ImpresoraCompleja(Impresora):
+    def imprimir(self, documento):
+        print("Imprimiendo el documento...")
+    
+    def escanear(self, documento):
+        print("Escanear el documento...")
+    
+    def faxear(self, documento, numero):
+        print("Enviando fax...")
+```
+
+En este caso, `ImpresoraBasica` está obligada a implementar métodos que no necesita, lo que puede generar código con excepciones o implementaciones vacías.
+
+#### **Aplicando ISP:**
+Dividimos la interfaz `Impresora` en interfaces más específicas:
+
+```python
+class Impresora:
+    def imprimir(self, documento):
+        pass
+
+class Escaner:
+    def escanear(self, documento):
+        pass
+
+class Faxeador:
+    def faxear(self, documento, numero):
+        pass
+
+class ImpresoraBasica(Impresora):
+    def imprimir(self, documento):
+        print("Imprimiendo el documento...")
+
+class ImpresoraCompleja(Impresora, Escaner, Faxeador):
+    def imprimir(self, documento):
+        print("Imprimiendo el documento...")
+    
+    def escanear(self, documento):
+        print("Escanear el documento...")
+    
+    def faxear(self, documento, numero):
+        print("Enviando fax...")
+```
+
+Ahora, `ImpresoraBasica` solo implementa los métodos que necesita, y `ImpresoraCompleja` implementa todas las interfaces. De esta manera, cada clase depende únicamente de las interfaces que utiliza.
+
+### **Conclusión:**
+El Principio de Separación de Interfaz nos enseña que las interfaces deben diseñarse de manera específica y especializada, evitando que las clases implementen métodos que no necesitan. Esto mejora la modularidad, reduce el acoplamiento y facilita el mantenimiento del código, ya que cada interfaz se centra en un propósito único y bien definido.
