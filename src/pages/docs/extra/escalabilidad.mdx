@@ -1,0 +1,57 @@
+---
+layout: "/layout.astro"
+---
+
+La **escalabilidad horizontal** (también conocida como *scaling out* o *escalamiento horizontal*) se refiere a la capacidad de un sistema para manejar un aumento en la carga de trabajo o el número de usuarios mediante la adición de más servidores o nodos al sistema, en lugar de aumentar el poder de un servidor individual (lo que se conoce como **escalabilidad vertical** o *scaling up*).
+
+### Características clave de la escalabilidad horizontal:
+1. **Distribución de la carga**:  
+   La carga de trabajo se distribuye entre múltiples servidores, lo que permite que cada nodo maneje una parte del tráfico total. Esto se logra mediante técnicas como **balanceadores de carga** o **sistemas de distribución de datos**.
+
+2. **Añadido de nodos**:  
+   A medida que aumenta la demanda, se pueden agregar más servidores al clúster o grupo de trabajo. Esto permite escalar el sistema de manera elástica y adaptarse a las necesidades cambiantes.
+
+3. **Reutilización de hardware estándar**:  
+   La escalabilidad horizontal aprovecha hardware convencional y asequible, en lugar de requerir servidores especializados y costosos. Esto reduce los costes iniciales y facilita la implementación.
+
+4. **Tolerancia a fallas**:  
+   Si uno o varios nodos fallan, el sistema puede continuar funcionando correctamente, ya que los datos y las tareas se distribuyen entre múltiples servidores.
+
+5. **Alta disponibilidad**:  
+   La escalabilidad horizontal garantiza que el sistema esté disponible incluso cuando se produce un aumento en la demanda o cuando algunos nodos están fuera de servicio.
+
+---
+
+### Cómo funciona la escalabilidad horizontal:
+1. **Particionamiento de datos (sharding)**:  
+   Los datos se dividen en fragmentos más pequeños y se distribuyen entre diferentes servidores. Cada servidor es responsable de una porción específica de los datos.
+
+2. **Replicación**:  
+   Los datos se replican en múltiples servidores para garantizar que, si un servidor falla, los datos estén disponibles en otros nodos.
+
+3. **Balanceadores de carga**:  
+   Estos dirigen el tráfico de los usuarios a los servidores más disponibles, asegurando que ningún servidor individual se sature.
+
+---
+
+### Ventajas de la escalabilidad horizontal:
+- **Costo-efectividad**: Es más económico agregar servidores estándar que invertir en un servidor de gran rendimiento.
+- **Escalabilidad elástica**: Se puede adaptar fácilmente a cambios en la demanda.
+- **Tolerancia a fallas**: El sistema sigue funcionando incluso si algunos nodos fallan.
+- **Flexibilidad**: Permite manejar diferentes tipos de cargas de trabajo y datos.
+
+---
+
+### Desafíos de la escalabilidad horizontal:
+- **Complejidad en la gestión**: Requiere una arquitectura distribuida, que puede ser más compleja de administrar.
+- **Problemas de consistencia de datos**: Debe gestionarse cuidadosamente la replicación y actualización de datos en diferentes nodos.
+- **Latencia**: La comunicación entre nodos puede introducir latencia en algunos casos.
+
+---
+
+### Ejemplos de uso:
+- **Aplicaciones web con alta demanda**: Como redes sociales o plataformas de comercio electrónico.
+- **Sistemas de big data**: Donde se manejan grandes volúmenes de datos, como en análisis de datos en tiempo real.
+- **Servicios en la nube**: Muchos proveedores de cloud utilizan escalabilidad horizontal para ofrecer servicios elásticos y altamente disponibles.
+
+En resumen, la escalabilidad horizontal es una estrategia clave para construir sistemas modernos, dinámicos y altamente disponibles, especialmente en entornos donde la demanda puede crecer rápidamente y de manera impredecible.

@@ -2,5 +2,15 @@
     "commentTranslate.targetLanguage": "es",
     "commentTranslate.browse.mode": "inplace",
     "commentTranslate.source": "Google",
-    "commentTranslate.multiLineMerge": true
+    "commentTranslate.multiLineMerge": true,
+    "files.exclude": {
+    "dist": true,
+    ".astro": true,
+    "node_modules": true
+  },
+  "search.exclude": {
+    "dist": true,
+    ".astro": true,
+    "node_modules": true
+  }
 }
