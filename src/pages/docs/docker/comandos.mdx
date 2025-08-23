@@ -1,0 +1,23 @@
+---
+layout: "/layout.astro"
+---
+
+# Comandos de Docker
+
+- ``docker exec -it nombre-del-contenedor nombre-terminal``: Accede a la terminal de un contenedor en ejecución.
+
+- ``show dbs``: Muestra las bases de datos disponibles en el servidor MongoDB.
+
+- ``db``: Muestra la base de datos actual en uso.
+
+- ``use nombre-de-la-base-de-datos``: Cambia a la base de datos especificada. Si no existe, la crea al insertar el primer documento.
+
+- ``show collections``: Muestra las colecciones (tablas) en la base de datos actual.
+
+- ``help``: Muestra una lista de comandos disponibles en la shell de MongoDB.
+
+- ``db.help()``: Muestra una lista de métodos disponibles para la base de datos actual.
+
+- ``db.stats()``: Muestra estadísticas de la base de datos actual, como el tamaño y el número de colecciones.
+
+- ``db.serverStatus()``: Muestra el estado del servidor MongoDB, incluyendo información sobre la memoria, conexiones y operaciones.

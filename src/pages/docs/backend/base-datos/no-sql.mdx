@@ -23,3 +23,203 @@ Las bases de datos NoSQL son un tipo de sistema de gestión de bases de datos qu
 7. **Costo-efectividad**: Pueden ejecutarse en hardware convencional y escalar horizontalmente, lo que puede ser más económico que invertir en hardware especializado.
 
 En resumen, las bases de datos NoSQL destacan por su flexibilidad, escalabilidad y capacidad para manejar grandes y variados conjuntos de datos, lo que las hace ideales para aplicaciones modernas y dinámicas.
+
+# Crear una coleccion en MongoDB
+
+```js
+// Crear una colección explícitamente
+// no valida el esquema de la coleccion
+db.createCollection("alumnos")
+
+// Crear colección con opciones - "nuevo"
+// valida el esquema de la coleccion, o sea que los documentos deben cumplir con el esquema definido
+db.createCollection("profesores", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["nombre", "edad", "especialidad"],
+      properties: {
+        nombre: { bsonType: "string" },
+        edad: { bsonType: "int", minimum: 25, maximum: 70 },
+        especialidad: { bsonType: "string" }
+      }
+    }
+  }
+})
+
+// Listar colecciones
+show collections
+
+// Obtener información de una colección
+db.alumnos.stats()
+
+// Renombrar colección
+db.alumnos.renameCollection("estudiantes")
+
+// Eliminar colección
+db.alumnos.drop()
+
+// Eliminar colección con confirmación
+db.runCommand({ drop: "alumnos" })
+```
+
+## 📝 Insertar Documentos - Operaciones de Escritura
+
+```js
+// Inserción básica
+db.alumnos.insertOne({
+  nombre: "Luis",
+  edad: 22,
+  email: "luis@gmail.com",
+  materias: ["Matemáticas", "Física", "Química"],
+  promedio: 8.5,
+  activo: true,
+  fechaIngreso: new Date(),
+  direccion: {
+    calle: "Av. Independencia 123",
+    ciudad: "Chubut",
+    codigoPostal: "4564",
+  },
+});
+
+// Con _id personalizado
+db.alumnos.insertOne({
+  _id: "ALU001",
+  nombre: "Carlos",
+  edad: 24,
+  materias: ["Química", "Biología"],
+  promedio: 7.8,
+});
+```
+
+## Insertar múltiples documentos:
+
+```js
+db.alumnos.insertMany([
+  {
+    nombre: "Ana",
+    edad: 21,
+    email: "ana@gmail.com",
+    materias: ["Historia", "Literatura", "Filosofía"],
+    promedio: 9.2,
+    becario: true,
+    direccion: {
+      calle: "San Martín 456",
+      ciudad: "Córdoba",
+      codigoPostal: "5000",
+    },
+  },
+  {
+    nombre: "Diego",
+    edad: 23,
+    email: "diego@gmail.com",
+    materias: ["Programación", "Base de Datos", "Algoritmos"],
+    promedio: 8.7,
+    becario: false,
+    direccion: {
+      calle: "Belgrano 789",
+      ciudad: "Rosario",
+      codigoPostal: "2000",
+    },
+  },
+  {
+    nombre: "María",
+    edad: 20,
+    email: "maria@gmail.com",
+    materias: ["Arte", "Diseño", "Historia del Arte"],
+    promedio: 9.5,
+    becario: true,
+  },
+]);
+
+// Inserción con opciones
+db.alumnos.insertMany(
+  [
+    { nombre: "Pedro", edad: 25 },
+    { nombre: "Facundo", edad: 26 },
+  ],
+  { ordered: false }
+); // Continúa insertando aunque falle uno
+```
+
+## 🔍 Consultas y Búsquedas - Operaciones de Lectura
+
+```js
+// Mostrar todos los documentos
+db.alumnos.find();
+
+// Contar documentos
+db.alumnos.countDocuments();
+
+// Encontrar uno solo
+db.alumnos.findOne();
+
+// Buscar por campo específico
+db.alumnos.find({ nombre: "Lucía" });
+
+// Buscar con múltiples condiciones (AND implícito)
+db.alumnos.find({
+  edad: 22,
+  activo: true,
+});
+```
+
+## Operadores de Comparación:
+
+```js
+// Mayor que ($gt)
+db.alumnos.find({ edad: { $gt: 22 } });
+
+// Mayor o igual que ($gte)
+db.alumnos.find({ promedio: { $gte: 9.0 } });
+
+// Menor que ($lt)
+db.alumnos.find({ edad: { $lt: 23 } });
+
+// Menor o igual que ($lte)
+db.alumnos.find({ promedio: { $lte: 8.0 } });
+
+// Diferente de ($ne)
+db.alumnos.find({ activo: { $ne: false } });
+
+// En un array de valores ($in)
+db.alumnos.find({ edad: { $in: [20, 21, 22] } });
+
+// No en un array de valores ($nin)
+db.alumnos.find({ edad: { $nin: [25, 26, 27] } });
+
+// Existe el campo ($exists)
+db.alumnos.find({ email: { $exists: true } });
+```
+## Operadores Lógicos:
+
+```js
+// OR
+db.alumnos.find({
+  $or: [
+    { promedio: { $gt: 9 } },
+    { becario: true }
+  ]
+})
+
+// AND explícito
+db.alumnos.find({
+  $and: [
+    { edad: { $gte: 20 } },
+    { edad: { $lte: 25 } }
+  ]
+})
+
+// NOT
+db.alumnos.find({
+  promedio: { $not: { $lt: 8.0 } }
+})
+
+// NOR (ni uno ni otro)
+db.alumnos.find({
+  $nor: [
+    { edad: { $lt: 20 } },
+    { promedio: { $lt: 7.0 } }
+  ]
+})
+```
