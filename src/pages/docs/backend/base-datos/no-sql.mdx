@@ -191,35 +191,375 @@ db.alumnos.find({ edad: { $nin: [25, 26, 27] } });
 // Existe el campo ($exists)
 db.alumnos.find({ email: { $exists: true } });
 ```
+
 ## Operadores Lógicos:
 
 ```js
 // OR
 db.alumnos.find({
-  $or: [
-    { promedio: { $gt: 9 } },
-    { becario: true }
-  ]
-})
+  $or: [{ promedio: { $gt: 9 } }, { becario: true }],
+});
 
 // AND explícito
 db.alumnos.find({
-  $and: [
-    { edad: { $gte: 20 } },
-    { edad: { $lte: 25 } }
-  ]
-})
+  $and: [{ edad: { $gte: 20 } }, { edad: { $lte: 25 } }],
+});
 
 // NOT
 db.alumnos.find({
-  promedio: { $not: { $lt: 8.0 } }
-})
+  promedio: { $not: { $lt: 8.0 } },
+});
 
 // NOR (ni uno ni otro)
 db.alumnos.find({
-  $nor: [
-    { edad: { $lt: 20 } },
-    { promedio: { $lt: 7.0 } }
-  ]
-})
+  $nor: [{ edad: { $lt: 20 } }, { promedio: { $lt: 7.0 } }],
+});
+```
+
+## Consultas en Arrays:
+
+```js
+// Buscar documentos que tengan un elemento específico en un array
+db.alumnos.find({ materias: "Matemáticas" });
+
+// Buscar con múltiples elementos (todos deben estar presentes)
+db.alumnos.find({ materias: { $all: ["Matemáticas", "Física"] } });
+
+// Buscar por tamaño de array
+db.alumnos.find({ materias: { $size: 3 } });
+
+// Usar $elemMatch para condiciones complejas en arrays
+db.alumnos.find({
+  notas: {
+    $elemMatch: {
+      materia: "Matemáticas",
+      calificacion: { $gte: 8 },
+    },
+  },
+});
+```
+
+## Consultas en Documentos Anidados:
+
+```js
+// Buscar en documento anidado usando notación de punto
+db.alumnos.find({ "direccion.ciudad": "Chubut" });
+
+// Múltiples campos en documento anidado
+db.alumnos.find({
+  "direccion.ciudad": "Córdoba",
+  "direccion.codigoPostal": "5000",
+});
+```
+
+## Expresiones Regulares:
+
+```js
+// Buscar nombres que contengan "Ana"
+db.alumnos.find({ nombre: /Ana/ });
+
+// Insensible a mayúsculas/minúsculas
+db.alumnos.find({ nombre: /ana/i });
+
+// Que empiece con "M"
+db.alumnos.find({ nombre: /^M/ });
+
+// Que termine con "ez"
+db.alumnos.find({ nombre: /ez$/ });
+```
+
+## Proyección - Seleccionar Campos:
+
+```js
+// Mostrar solo nombre y edad (incluye _id por defecto)
+db.alumnos.find({}, { nombre: 1, edad: 1 });
+
+// Excluir _id
+db.alumnos.find({}, { nombre: 1, edad: 1, _id: 0 });
+
+// Excluir campos específicos
+db.alumnos.find({}, { direccion: 0, fechaIngreso: 0 });
+
+// Proyección en arrays (mostrar solo primer elemento)
+db.alumnos.find({}, { "materias.$": 1 });
+
+// Proyección en arrays (mostrar primeros 2 elementos)
+db.alumnos.find({}, { materias: { $slice: 2 } });
+
+// Proyección en arrays (mostrar últimos 2 elementos)
+db.alumnos.find({}, { materias: { $slice: -2 } });
+```
+
+## Ordenamiento y Limitación:
+
+```js
+// Ordenar por edad ascendente
+db.alumnos.find().sort({ edad: 1 });
+
+// Ordenar por promedio descendente
+db.alumnos.find().sort({ promedio: -1 });
+
+// Ordenamiento múltiple
+db.alumnos.find().sort({ promedio: -1, edad: 1 });
+
+// Limitar resultados
+db.alumnos.find().limit(5);
+
+// Saltar documentos (paginación)
+db.alumnos.find().skip(10).limit(5);
+
+// Combinando todo
+db.alumnos.find({ activo: true }).sort({ promedio: -1 }).limit(3);
+```
+
+# 🛠️ Actualizar Documentos - Operaciones de Modificación
+
+## Actualización de Un Documento:
+
+```js
+// Actualizar un campo
+db.alumnos.updateOne(
+  { nombre: "Carlos" },
+  { $set: { promedio: 8.3, activo: true } }
+);
+
+// Incrementar un valor numérico
+db.alumnos.updateOne({ nombre: "Ana" }, { $inc: { edad: 1 } });
+
+// Agregar elemento a un array
+db.alumnos.updateOne(
+  { nombre: "Diego" },
+  { $push: { materias: "Matemáticas Avanzadas" } }
+);
+
+// Agregar múltiples elementos a un array
+db.alumnos.updateOne(
+  { nombre: "María" },
+  { $push: { materias: { $each: ["Escultura", "Pintura"] } } }
+);
+
+// Remover elemento de un array
+db.alumnos.updateOne(
+  { nombre: "Diego" },
+  { $pull: { materias: "Algoritmos" } }
+);
+
+// Remover el último elemento de un array
+db.alumnos.updateOne(
+  { nombre: "Lucía" },
+  { $pop: { materias: 1 } } // 1 para último, -1 para primero
+);
+
+// Eliminar un campo
+db.alumnos.updateOne({ nombre: "Carlos" }, { $unset: { fechaIngreso: "" } });
+
+// Renombrar un campo
+db.alumnos.updateOne({ nombre: "Ana" }, { $rename: { becario: "esBecario" } });
+```
+
+## Actualización de Múltiples Documentos:
+
+```js
+// Actualizar todos los documentos que coincidan
+db.alumnos.updateMany({ edad: { $lt: 22 } }, { $set: { categoria: "joven" } });
+
+// Incrementar promedio para todos los becarios
+db.alumnos.updateMany({ becario: true }, { $inc: { promedio: 0.5 } });
+```
+
+## Upsert (Actualizar o Insertar):
+
+```js
+// Si no existe, lo crea
+db.alumnos.updateOne(
+  { nombre: "Roberto" },
+  {
+    $set: {
+      edad: 22,
+      promedio: 8.0,
+      materias: ["Introducción a la Programación"],
+    },
+  },
+  { upsert: true }
+);
+```
+
+## Replace (Reemplazar Documento Completo):
+
+```js
+db.alumnos.replaceOne(
+  { nombre: "Carlos" },
+  {
+    nombre: "Carlos",
+    edad: 25,
+    email: "carlos.mendez.nuevo@email.com",
+    materias: ["Química Avanzada", "Biología Molecular"],
+    promedio: 8.8,
+    graduado: false,
+  }
+);
+```
+
+## 🗑️ Eliminar Documentos - Operaciones de Borrado
+
+```js
+// Eliminar un documento
+db.alumnos.deleteOne({ nombre: "Ana" });
+
+// Eliminar múltiples documentos
+db.alumnos.deleteMany({ activo: false });
+
+// Eliminar todos los documentos de la colección
+db.alumnos.deleteMany({});
+
+// Encontrar y eliminar (devuelve el documento eliminado)
+db.alumnos.findOneAndDelete({ promedio: { $lt: 6.0 } });
+```
+
+## 📊 Agregaciones - Pipeline de Procesamiento
+
+Las agregaciones son operaciones o funciones que se utilizan para resumir o combinar datos de un conjunto más grande en un solo valor. Este término se usa comúnmente en varios campos, como las bases de datos, el análisis de datos y la programación.
+
+1. En Bases de Datos (SQL):
+   En el contexto de las bases de datos, las funciones de agregación se utilizan para resumir datos de una tabla. Algunas de las funciones más comunes son:
+
+SUM: Calcula la suma de un conjunto de valores.
+COUNT: Cuenta el número de filas o valores no nulos en una columna.
+AVG: Calcula el promedio de un conjunto de valores.
+MAX: Devuelve el valor máximo de un conjunto de valores.
+MIN: Devuelve el valor mínimo de un conjunto de valores.
+
+```js
+// Promedio general de todos los alumnos
+db.alumnos.aggregate([
+  {
+    $group: {
+      _id: null,
+      promedioGeneral: { $avg: "$promedio" },
+      totalAlumnos: { $sum: 1 },
+      promedioMaximo: { $max: "$promedio" },
+      promedioMinimo: { $min: "$promedio" },
+    },
+  },
+]);
+
+// Agrupar por ciudad
+db.alumnos.aggregate([
+  {
+    $group: {
+      _id: "$direccion.ciudad",
+      cantidadAlumnos: { $sum: 1 },
+      promedioEdad: { $avg: "$edad" },
+    },
+  },
+]);
+
+// Estadísticas por rango de edad
+db.alumnos.aggregate([
+  {
+    $group: {
+      _id: {
+        $switch: {
+          branches: [
+            { case: { $lt: ["$edad", 21] }, then: "Menores de 21" },
+            { case: { $lt: ["$edad", 25] }, then: "21-24 años" },
+          ],
+          default: "25 años o más",
+        },
+      },
+      cantidad: { $sum: 1 },
+      promedioAcademico: { $avg: "$promedio" },
+    },
+  },
+]);
+```
+
+# 🔍 Índices - Optimización de Consultas
+
+## Crear y Gestionar Índices:
+
+```js
+// Crear índice simple
+db.alumnos.createIndex({ nombre: 1 }); // 1 = ascendente, -1 = descendente
+
+// Crear índice compuesto
+db.alumnos.createIndex({ edad: 1, promedio: -1 });
+
+// Índice de texto para búsquedas
+db.alumnos.createIndex({
+  nombre: "text",
+  "direccion.ciudad": "text",
+});
+
+// Índice en documento anidado
+db.alumnos.createIndex({ "direccion.ciudad": 1 });
+
+// Índice en array
+db.alumnos.createIndex({ materias: 1 });
+
+// Índice único
+db.alumnos.createIndex({ email: 1 }, { unique: true });
+```
+
+## Información de Índices:
+
+```js
+// Listar todos los índices
+db.alumnos.getIndexes();
+
+// Eliminar índice
+db.alumnos.dropIndex({ nombre: 1 });
+
+// Eliminar todos los índices (excepto _id)
+db.alumnos.dropIndexes();
+```
+
+## 🔄 Operaciones Bulk (Por Lotes)
+
+```js
+// Bulk write ordenado
+db.alumnos.bulkWrite(
+  [
+    {
+      insertOne: {
+        document: {
+          nombre: "Pedro Bulk",
+          edad: 25,
+          promedio: 8.0,
+        },
+      },
+    },
+    {
+      updateOne: {
+        filter: { nombre: "Lucía García" },
+        update: { $set: { promedio: 9.0 } },
+      },
+    },
+    {
+      deleteOne: {
+        filter: { promedio: { $lt: 6.0 } },
+      },
+    },
+  ],
+  { ordered: true }
+);
+
+// Bulk write no ordenado (más eficiente)
+db.alumnos.bulkWrite(
+  [
+    {
+      updateMany: {
+        filter: { edad: { $lt: 22 } },
+        update: { $set: { categoria: "junior" } },
+      },
+    },
+    {
+      updateMany: {
+        filter: { edad: { $gte: 22 } },
+        update: { $set: { categoria: "senior" } },
+      },
+    },
+  ],
+  { ordered: false }
+);
 ```
