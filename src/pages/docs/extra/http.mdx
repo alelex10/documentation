@@ -1,0 +1,209 @@
+---
+layout: "/layout.astro"
+---
+
+## MIME Types
+
+Los **MIME types** (Multipurpose Internet Mail Extensions) son una manera de indicar el tipo de dato que tiene un archivo o contenido en Internet. Son esenciales para que los navegadores y servidores sepan cómo manejar diferentes tipos de archivos, como texto, imágenes, videos, etc. Por ejemplo:
+
+- `text/plain` para archivos de texto.
+- `image/jpeg` para imágenes en formato JPEG.
+- `application/pdf` para documentos PDF.
+
+Por otro lado, **multipart/form-data** es un tipo MIME específico utilizado para enviar formularios en HTTP, especialmente cuando se incluyen archivos. Permite que los datos del formulario y los archivos adjuntos se envuelvan en una sola solicitud, facilitando su manejo en el servidor. Es común en formularios web donde los usuarios suben archivos.
+
+# Header
+
+En una petición HTTP, el encabezado (header) es una parte fundamental que proporciona información adicional sobre la petición o el respuesta. A continuación, te explico en detalle los diferentes tipos de encabezados que pueden estar presentes en una petición HTTP:
+
+---
+
+### **1. Encabezados generales (General Headers)**
+Estos encabezados se pueden usar tanto en peticiones como en respuestas y proporcionan información general:
+
+- **`Date`**: Fecha y hora en que se envió la petición o respuesta.
+  - Ejemplo: `Date: Tue, 21 Mar 2023 15:30:00 GMT`
+
+- **`Connection`**: Especifica cómo se manejará la conexión (por ejemplo, si se cerrará después de la respuesta o se mantendrá abierta).
+  - Ejemplo: `Connection: keep-alive` o `Connection: close`.
+
+- **`Cache-Control`**: Indica cómo debe comportarse el caché (por ejemplo, si el navegador puede almacenar la respuesta en caché).
+  - Ejemplo: `Cache-Control: no-cache` o `Cache-Control: max-age=3600`.
+
+- **`Transfer-Encoding`**: Especifica el formato de transferencia de los datos (por ejemplo, compresión).
+  - Ejemplo: `Transfer-Encoding: chunked`.
+
+- **`Via`**: Indica los intermediarios (como proxies) por los que ha pasado la petición.
+  - Ejemplo: `Via: 1.1 proxy.example.com`.
+
+- **`Upgrade`**: Se utiliza para actualizar la versión del protocolo (por ejemplo, de HTTP/1.1 a WebSocket).
+  - Ejemplo: `Upgrade: websocket`.
+
+---
+
+### **2. Encabezados de petición (Request Headers)**
+Estos encabezados están presentes solo en las peticiones y proporcionan información sobre lo que está solicitando el cliente:
+
+- **`Host`**: Especifica el servidor al que se está enviando la petición (obligatorio en HTTP/1.1).
+  - Ejemplo: `Host: www.ejemplo.com`.
+
+- **`User-Agent`**: Identifica al agente usuario (por ejemplo, el navegador o aplicación que está haciendo la petición).
+  - Ejemplo: `User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)`.
+
+- **`Accept`**: Indica los tipos de contenido que el cliente puede aceptar como respuesta.
+  - Ejemplo: `Accept: text/html, application/json`.
+
+- **`Accept-Language`**: Especifica los idiomas que prefiere el cliente.
+  - Ejemplo: `Accept-Language: es-ES, es;q=0.8`.
+
+- **`Accept-Encoding`**: Indica los algoritmos de compresión que el cliente admite.
+  - Ejemplo: `Accept-Encoding: gzip, deflate`.
+
+- **`Referer`**: Indica la URL de la página que hizo la petición (por ejemplo, la página web que contiene un enlace).
+  - Ejemplo: `Referer: https://www.ejemplo.com/pagina1.html`.
+
+- **`Authorization`**: Proporciona credenciales de autenticación (por ejemplo, un token).
+  - Ejemplo: `Authorization: Bearer token123`.
+
+- **`Cookie`**: Envía las cookies almacenadas en el navegador del cliente al servidor.
+  - Ejemplo: `Cookie: sessionID=123456789`.
+
+- **`Content-Type`**: Indica el tipo de dato que se envía en el cuerpo de la petición.
+  - Ejemplo: `Content-Type: application/json`.
+
+- **`Content-Length`**: Especifica el tamaño del cuerpo de la petición en bytes.
+  - Ejemplo: `Content-Length: 1024`.
+
+- **`If-Modified-Since`**: Se utiliza para verificar si un recurso ha sido modificado desde una fecha específica.
+  - Ejemplo: `If-Modified-Since: Tue, 21 Mar 2023 15:30:00 GMT`.
+
+---
+
+### **3. Encabezados de respuesta (Response Headers)**
+Estos encabezados están presentes solo en las respuestas y proporcionan información sobre cómo el servidor maneja la petición:
+
+- **`Server`**: Identifica el servidor web que está respondiendo (por ejemplo, Apache, Nginx).
+  - Ejemplo: `Server: Apache/2.4.1`.
+
+- **`Content-Type`**: Indica el tipo de dato que se devuelve en el cuerpo de la respuesta.
+  - Ejemplo: `Content-Type: text/html; charset=UTF-8`.
+
+- **`Content-Length`**: Especifica el tamaño del cuerpo de la respuesta en bytes.
+  - Ejemplo: `Content-Length: 2048`.
+
+- **`Location****: Redirige al cliente a una nueva URL.
+  - Ejemplo: `Location: https://www.ejemplo.com/nueva-pagina`.
+
+- **`Set-Cookie`**: Establece una cookie en el navegador del cliente.
+  - Ejemplo: `Set-Cookie: sessionID=123456789; Path=/`.
+
+- **`Expires`**: Indica la fecha y hora en que la respuesta deja de ser válida.
+  - Ejemplo: `Expires: Wed, 21 Mar 2024 15:30:00 GMT`.
+
+- **`Last-Modified`**: Especifica la fecha y hora en que el recurso fue modificado por última vez.
+  - Ejemplo: `Last-Modified: Tue, 21 Mar 2023 15:30:00 GMT`.
+
+- **`ETag`**: Un identificador único para la versión del recurso (utilizado para caché).
+  - Ejemplo: `ETag: "123456789"`.
+
+- **`Allow`**: Indica los métodos HTTP que el servidor admite para un recurso específico.
+  - Ejemplo: `Allow: GET, POST, DELETE`.
+
+- **`Status`**: Indica el código de estado de la respuesta (por ejemplo, 200 OK, 404 Not Found).
+  - Ejemplo: `HTTP/1.1 200 OK`.
+
+---
+
+### **4. Encabezados de entidad (Entity Headers)**
+Estos encabezados se relacionan con el cuerpo de la petición o respuesta:
+
+- **`Content-MD5`**: Proporciona un resumen MD5 del cuerpo para verificar su integridad.
+  - Ejemplo: `Content-MD5: Q2hlY2sgSW50ZW50aWFzIEF0aGVvcGxlIDU1`.
+
+- **`Content-Range`**: Indica el rango de bytes que se está enviando (útil para descargar partes de un archivo).
+  - Ejemplo: `Content-Range: bytes 0-499/1234`.
+
+- **`Content-Language**`: Especifica los idiomas del contenido.
+  - Ejemplo: `Content-Language: es-ES`.
+
+- **`Content-Location`**: Proporciona la URL del recurso si este ha sido redirigido.
+  - Ejemplo: `Content-Location: /nueva-pagina.html`.
+
+---
+
+### **5. Encabezados de seguridad (Security Headers)**
+Estos encabezados son importantes para proteger la comunicación y el sitio web:
+
+- **`Strict-Transport-Security (HSTS)`**: Obliga al navegador a usar una conexión segura (HTTPS).
+  - Ejemplo: `Strict-Transport-Security: max-age=31536000`.
+
+- **`Content-Security-Policy (CSP)`**: Define las políticas de seguridad del contenido para prevenir ataques como XSS.
+  - Ejemplo: `Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.example.com`.
+
+- **`X-Content-Type-Options`**: Previene que el navegador infiera el tipo de contenido.
+  - Ejemplo: `X-Content-Type-Options: nosniff`.
+
+- **`X-Frame-Options`**: Evita que el sitio web sea incluido en un iframe para prevenir clickjacking.
+  - Ejemplo: `X-Frame-Options: DENY`.
+
+- **`X-XSS-Protection`**: Activa la protección contra ataques de XSS en el navegador.
+  - Ejemplo: `X-XSS-Protection: 1; mode=block`.
+
+- **`Referrer-Policy`**: Controla cómo se comparte el encabezado `Referer`.
+  - Ejemplo: `Referrer-Policy: no-referrer, strict-origin-when-cross-origin`.
+
+- **`Access-Control-Allow-Origin`**: Especifica qué dominios pueden acceder al recurso (usado en CORS).
+  - Ejemplo: `Access-Control-Allow-Origin: *`.
+
+---
+
+### **Resumen**
+Los encabezados HTTP son fundamentales para comunicar información adicional entre el cliente y el servidor. Dependiendo del contexto, algunos encabezados son obligatorios, mientras que otros son opcionales. Los encabezados pueden influir en cómo se procesa la petición, cómo se maneja el caché, la autenticación, la seguridad, y más.
+
+Espero que esta explicación detallada te haya ayudado a entender mejor los encabezados HTTP. Si tienes más preguntas, no dudes en preguntar. 😊
+
+#### Boundary
+
+Un **boundary** (límite en español) es una cadena de caracteres que se utiliza en los mensajes MIME (Multipurpose Internet Mail Extensions), especialmente en el contexto de **multipart/form-data**, para separar las diferentes partes de un mensaje o formulario.
+
+Cuando un formulario es enviado mediante HTTP usando **multipart/form-data**, los datos se dividen en secciones o "partes" (parts). Por ejemplo, cada campo del formulario (como un nombre, una dirección de correo electrónico, etc.) y cada archivo adjunto constituyen una parte separada. El **boundary** actúa como un delimitador entre estas partes.
+
+### Características del boundary:
+1. **Especificación en el encabezado (header):**
+   - El boundary se define en el encabezado `Content-Type` de la solicitud HTTP. Por ejemplo:
+     ```
+     Content-Type: multipart/form-data; boundary=----mi-limite
+     ```
+     Aquí, `----mi-limite` es el boundary que se utilizará para separar las partes.
+
+2. **Separación de partes:**
+   - Cada parte del mensaje está separada por la cadena del boundary. Al final del mensaje, el boundary se repite y se le agrega `--` al final para indicar el fin del mensaje.
+
+3. **No aparece en los datos:**
+   - El boundary no debe aparecer dentro de los datos de las partes, ya que podría causar confusión. Por lo general, se elige una cadena única y aleatoria para evitar coincidencias.
+
+### Ejemplo de un mensaje multipart/form-data:
+```
+POST /mi-endpoint HTTP/1.1
+Content-Type: multipart/form-data; boundary=----mi-limite
+
+----mi-limite
+Content-Disposition: form-data; name="campo1"
+
+Valor del campo 1
+----mi-limite
+Content-Disposition: form-data; name="archivo"; filename="documento.pdf"
+Content-Type: application/pdf
+
+<contenido del archivo binario>
+----mi-limite--
+```
+
+En este ejemplo:
+- `----mi-limite` es el boundary.
+- Las dos partes del mensaje están separadas por el boundary.
+- La primera parte contiene el valor de un campo de formulario.
+- La segunda parte contiene un archivo adjunto.
+- El final del mensaje se indica con `----mi-limite--`.
+
+El boundary es esencial para que el servidor pueda interpretar correctamente las diferentes partes del mensaje y procesar los datos del formulario de manera adecuada.
