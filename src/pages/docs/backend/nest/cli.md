@@ -2,6 +2,10 @@
 layout: "/layout.astro"
 ---
 
+# CLI de NestJS
+
+- ver lista de opciones: ``nest --help``
+
 ### 1. Crear un nuevo proyecto (si aún no lo tienes)
 
 Primero, necesitas un proyecto de NestJS.
