@@ -24,13 +24,19 @@ El comando `npx tsc --init` genera un archivo **tsconfig.json** con la configura
 
 ```json
 {
-	"compilerOptions": {
-	"target": "ES2020", // version de ECMAScript a la que se compila el codigo
-	"target": "ESNext", // para decirle que copile en la ultima vercion de ECMAScript
-	"outDir": "./dist", // carpeta que contiene la compilacion del codigo
-	"strict": true // modo estricto para que typescript sea mas estricto con el codigo
-	},
-	"exclude": ["dist, node_modules"], // excluye la carpeta dist de la compilacion(comprobacion de tipos)
+  "compilerOptions": {
+    "module": "CommonJS", //forma en la que se importan y exportan los modulos cunado se compila el codigo
+    // no es lo mismo que el del package.json ya que este es para el entorno de ejecucion y no para la compilacion
+    // commonjs se usa comúnmente para module por su fuerte compatibilidad con Node.js y el ecosistema de empaquetadores, aunque los ES Modules son la tendencia moderna.
+    //"module": "NodeNext", // para usar ES Modules en Node.js
+    "target": "ES2020", // version de ECMAScript a la que se compila el codigo
+    "target": "ESNext", // para decirle que copile en la ultima vercion de ECMAScript
+    "outDir": "./dist", // carpeta que contiene la compilacion del codigo
+    "strict": true, // modo estricto para que typescript sea mas estricto con el codigo
+	"moduleResolution": "node", // para usar la resolucion de modulos de Node
+	"skipLibCheck": true, // omite la verificacion de tipos en los archivos de declaracion
+  },
+  "exclude": ["dist, node_modules"] // excluye la carpeta dist de la compilacion(comprobacion de tipos)
 }
 ```
 
@@ -38,6 +44,93 @@ El comando `npx tsc --init` genera un archivo **tsconfig.json** con la configura
 
 ## Archivo `package.json`
 
-- **tsc:** quiere decir ``typescript compiler``
+- **tsc:** quiere decir `typescript compiler`
 - Para **copilar** el codigo escrito con tscript, puedo crear un `script` en `package.json` ej: `"build": "tsc"`
-  - Luego para 
+  - Luego para
+
+# package.json vs tsconfig.json
+
+¡Excelente pregunta! Estás tocando un punto clave sobre cómo se configuran los proyectos de JavaScript y TypeScript. Vamos a desglosar la diferencia entre las configuraciones de `tsconfig.json` y lo que defines en `package.json`, y qué pasaría si intentaras poner `target: "module"` en `tsconfig.json`.
+
+### `tsconfig.json` vs. `package.json`
+
+Ambos archivos son cruciales para configurar tu proyecto, pero sirven para propósitos diferentes:
+
+1.  **`tsconfig.json`**:
+
+    - **Propósito:** Configura el **compilador de TypeScript (`tsc`)**. Aquí defines cómo TypeScript debe transpirar tu código `.ts` a `.js`, qué características del lenguaje puede usar, cómo deben manejarse los módulos, etc.
+    - **Enfoque:** Se centra en el **proceso de compilación de TypeScript**.
+    - **Ejemplo:** Define `target`, `module`, `outDir`, `rootDir`, `strict`, `paths`, etc.
+
+2.  **`package.json`**:
+    - **Propósito:** Describe tu proyecto de Node.js. Contiene metadatos del proyecto, lista las dependencias, y lo más importante para esta discusión, define los **scripts** que se pueden ejecutar (como `build`, `start`, `test`) y la **configuración del entorno de ejecución (principalmente para Node.js)**.
+    - **Enfoque:** Se centra en la **gestión del proyecto, sus dependencias y la ejecución de tareas**.
+    - **Ejemplo:** Contiene `name`, `version`, `dependencies`, `devDependencies`, `scripts` (como `"build": "tsc"`), y campos de configuración para herramientas específicas (como `"type": "module"` para indicar que el proyecto usa ES Modules en Node.js).
+
+### ¿Qué significa `target: "module"` en `tsconfig.json`?
+
+Aquí es donde se pone interesante tu pregunta. La opción `target` en `tsconfig.json` **espera valores que representen versiones de ECMAScript** (como `es5`, `es2020`, `esnext`).
+
+Si intentaras poner `target: "module"`, el compilador de TypeScript **no reconocería `"module"` como un valor válido para `target`**. Te arrojaría un error indicando que `"module"` no es una opción reconocida para `target`.
+
+- **¿Por qué?** Porque `"module"` **es un valor válido para la opción `module`**, no para la opción `target`. Son dos configuraciones distintas que controlan aspectos diferentes de la compilación.
+
+  - `target` se relaciona con la **versión del _lenguaje_ JavaScript de salida**.
+  - `module` se relaciona con el **sistema de _módulos_ de salida**.
+
+### La conexión entre `package.json` y `tsconfig.json`
+
+La configuración en `package.json` puede influir en cómo se utiliza la salida generada por `tsconfig.json`. El ejemplo más común es la propiedad `"type"` en `package.json`:
+
+- **`"type": "module"` en `package.json`**: Cuando añades esto a tu `package.json`, le dices a Node.js que el proyecto utiliza **ES Modules** de forma predeterminada para los archivos `.js`. Esto significa que puedes usar `import` y `export` directamente en tus archivos `.js` sin necesidad de `.mjs`.
+
+  - En este contexto, es probable que tu `tsconfig.json` también tenga configurado `module: "esnext"` (o similar) para que la salida de TypeScript coincida con el sistema de módulos esperado por Node.js.
+
+- **Sin `"type": "module"` (o `"type": "commonjs"`) en `package.json`**: Node.js por defecto asume que el proyecto usa **CommonJS**. En este caso, tu `tsconfig.json` podría tener `module: "commonjs"`.
+
+**Ejemplo:**
+
+Imagina que tu `package.json` tiene:
+
+```json
+{
+  "name": "mi-proyecto",
+  "version": "1.0.0",
+  //por defecto, si no se pone nada, usa CommonJS
+  //tiene que ser el mismo que el del tsconfig.json en la propiedad module: "esnext" o "commonjs", en este caso es "esnext" porque quiero usar ES Modules
+  "type": "module", // Indica que usa ES Modules
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
+```
+
+Y tu `tsconfig.json` tiene:
+
+```json
+{
+  "compilerOptions": {
+    "target": "esnext", // Genera código JS moderno
+    "module": "esnext", // Usa ES Modules para la salida
+    "outDir": "./dist",
+    "rootDir": "./src"
+    // ... otras opciones
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
+```
+
+Aquí, la configuración `type: "module"` en `package.json` y `module: "esnext"` en `tsconfig.json` se alinean. El comando `npm run build` ejecutará `tsc`, que tomará tus archivos `.ts` de `src`, los compilará a JavaScript usando la sintaxis moderna (`target: "esnext"`) y el sistema de módulos ES Modules (`module: "esnext"`), y los colocará en `dist`. Como el proyecto está marcado como `"type": "module"`, Node.js podrá ejecutar estos archivos `dist` directamente usando `import`/`export`.
+
+**En resumen:**
+
+- `tsconfig.json` es para la configuración del compilador de TypeScript.
+- `package.json` es para la configuración general del proyecto, dependencias y scripts.
+- `target` en `tsconfig.json` define la **versión del lenguaje JavaScript** de salida.
+- `module` en `tsconfig.json` define el **sistema de módulos** de salida.
+- No puedes usar `target: "module"` porque `"module"` no es una versión de ECMAScript válida para `target`.
+- La propiedad `"type"` en `package.json` (como `"type": "module"`) le dice a Node.js qué sistema de módulos esperar, y esta configuración debe alinearse con la opción `module` en tu `tsconfig.json` para una experiencia fluida.
