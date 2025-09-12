@@ -1,0 +1,39 @@
+---
+layout: "/layout.astro"
+---
+
+## Levantar un contenedor de MongoDB
+
+- Acceder a la terminal del contenedor:
+- **mongosh** es la nueva shell de MongoDB, que reemplaza a la antigua mongo shell.
+
+```bash
+docker exec -it mongodb_dev mongosh
+```
+
+- Archivo `docker-compose.yml` para levantar un contenedor de MongoDB:
+
+- uri de conexión:
+
+```bash
+mongodb://admin:password123@localhost:27017/escuela
+```
+
+```yaml
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: mongodb_dev
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: escuela
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:
+```

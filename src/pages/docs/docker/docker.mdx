@@ -1,0 +1,13 @@
+---
+layout: "/layout.astro"
+---
+
+## Flags
+
+- `--detach` o `-d`: Ejecuta el contenedor en segundo plano (modo "detached").
+
+  - No bloquea la terminal: Cuando ejecutas docker compose up -d, los contenedores se inician en segundo plano. La terminal no se mantiene ocupada mostrando los logs, lo que te permite seguir trabajando en ella.
+
+  - Los contenedores siguen funcionando: Aunque cierres la terminal o te desconectes, los contenedores seguirán ejecutándose.
+
+  - Logs están disponibles: Aunque no ves los logs en tiempo real, puedes verlos más tarde usando el comando **docker logs nombre-del-contenedor**.
