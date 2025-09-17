@@ -6,6 +6,12 @@ layout: "/layout.astro"
 
 **inicializar proyecto react**
 
+- no pude instalarlo con **react router framework**
+  - el template con las configuraciones de react router, tiene conflicto con storybook
+  - lo hice correr con **react router** en su version mas vasica
+- instalar los tipos de node ``pnpm install @types/node``
+- configurar **tailwindcss** con **storybook**
+
 ```bash
 pnpm create vite@latest <project-name> -- --template react-ts
 ```
@@ -14,6 +20,10 @@ pnpm create vite@latest <project-name> -- --template react-ts
 
 ```bash
 npm install -D @storybook/react-vite @storybook/addon-a11y @storybook/addon-docs @storybook/addon-vitest @storybook/test-runner @vitejs/plugin-react vitest playwright @vitest/coverage-v8
+```
+o
+```bash
+pnpm create storybook@latest
 ```
 
 **incializar Storybook**
